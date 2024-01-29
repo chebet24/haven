@@ -21,6 +21,43 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+;
+
+// Get all products by shop name
+router.get("/shop/:shop", async (req, res) => {
+  try {
+    const shop = req.params.shop;
+
+    // Find all products with the specified shop name
+    const products = await Product.find({ shop });
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found for the given shop name" });
+    }
+
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//get by category
+router.get("/category/:category", async (req, res) => {
+  try {
+    const category = req.params.category;
+
+    // Find all products with the specified shop name
+    const products = await Product.find({ category });
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found for the given category name" });
+    }
+
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Define the endpoint for getting a specific product by ID
 router.get("/:productId", async (req, res) => {
