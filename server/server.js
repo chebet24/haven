@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const app = express()
+const app = express();
 const cors = require("cors");
 const corsOptions = {
     origin: 'http://localhost:3000',

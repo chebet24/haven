@@ -83,7 +83,7 @@ const shoesIconAddress = "";
       </div>
 
       <div className="w-full flex items-center p-4">
-        <Link to="/admin-products" className="w-full flex items-center">
+        <Link to="/admin/products" className="w-full flex items-center">
           <BsHandbag
             size={30}
             color={`${active === 5 ? "crimson" : "#555"}`}

@@ -1,7 +1,7 @@
 import React from 'react'
-import AdminHeader from '../components/Layout/AdminHeader'
-import AdminSideBar from '../components/Admin/Layout/AdminSideBar'
-import AllProducts from "../components/Admin/AllProducts";
+import AdminHeader from '../../components/Admin/Layout/Header'
+import AdminSideBar from '../../components/Admin/Layout/Sidebar'
+import AllProducts from '../../components/Admin/products'
 
 const AdminDashboardProducts = () => {
   return (

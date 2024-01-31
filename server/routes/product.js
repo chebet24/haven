@@ -3,7 +3,7 @@ const router = express.Router()
 const Product = require("../models/products");
 
 // Define the endpoint for creating a new product
-router.post("/", async (req, res) => {
+router.post("/create", async (req, res) => {
   try {
     const newProduct = await Product.create(req.body);
     res.json(newProduct);
@@ -13,7 +13,7 @@ router.post("/", async (req, res) => {
 });
 
 // Define the endpoint for getting all products
-router.get("/", async (req, res) => {
+router.get("/all", async (req, res) => {
   try {
     const products = await Product.find();
     res.json(products);

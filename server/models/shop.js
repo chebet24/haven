@@ -15,7 +15,7 @@ const shopSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter your password"],
     minLength: [6, "Password should be greater than 6 characters"],
-    select: false,
+    // select: false,
   },
   description: {
     type: String,
@@ -33,9 +33,9 @@ const shopSchema = new mongoose.Schema({
     default: "Seller",
   },
   avatar: {
-      data: Buffer, // This is where the image data is stored
-      contentType: String,
-    },
+    type: [String], // Assuming storing image URLs
+    required: true,
+  },
   zipCode: {
     type: Number,
     required: true,
