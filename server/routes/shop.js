@@ -4,7 +4,6 @@ const Shop = require("../models/shop");
 const jwt = require("jsonwebtoken");
 
 // Route for shop registration
-// Route for shop registration
 router.post("/createshop", async (req, res) => {
   try {
     // Check if the shop already exists
@@ -23,22 +22,6 @@ router.post("/createshop", async (req, res) => {
     await newShop.save();
 
     res.status(201).json({ token });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-router.delete("/delete/:id", async (req, res) => {
-  const shopId = req.params.id;
-
-  try {
-    const result = await Shop.deleteOne({ _id: shopId });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ message: 'Shop not found' });
-    }
-
-    res.json({ message: 'Shop deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -65,14 +48,20 @@ router.post('/loginshop', async (req, res) => {
 
     // Generate JWT token
     const token = shop.getJwtToken();
+    const isSeller = shop.isSeller; // Assuming you have an isSeller property in your Shop model
 
-    // Send the token in the response
-    return res.json({ token });
+    // Send the token and isSeller information in the response
+    return res.json({ token, isSeller });
+
+    
   } catch (error) {
     // Handle errors and send a single error response
     return res.status(500).json({ error: error.message });
   }
 });
+
+
+// Route to get all shops
 router.get("/all", async (req, res) => {
     try {
       // Retrieve all shops

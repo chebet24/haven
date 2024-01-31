@@ -18,6 +18,8 @@ import ProductsPage from './pages/ProductsPage';
 import ShopDashboardPage from './pages/Shop/ShopDashboardPage';
 import ShopCreateProduct from './pages/Shop/ShopCreateProduct';
 import ShopCreateEvent from './pages/Shop/ShopCreateEvent';
+import ShopProducts from "./pages/Shop/ShopProducts";
+import ShopAllEvents from './pages/Shop/ShopAllEvents';
 
 
 function App() {
@@ -54,6 +56,23 @@ function App() {
             
           }
         />
+               <Route
+          path="/dashboard-products"
+          element={
+              <ShopProducts/>
+            
+          }
+        />
+                <Route
+          path="/dashboard-events"
+          element={
+           
+              <ShopAllEvents />
+            
+          }
+        />
+        
+     
         {/*
         <Route
           path="/dashboard-orders"
@@ -79,22 +98,8 @@ function App() {
             
           }
         />
-        <Route
-          path="/dashboard-products"
-          element={
-              <ShopAllProducts />
-            
-          }
-        />
-     
-        <Route
-          path="/dashboard-events"
-          element={
-           
-              <ShopAllEvents />
-            
-          }
-        />
+ 
+
         <Route
           path="/dashboard-coupouns"
           element={

@@ -60,7 +60,7 @@ router.get("/category/:category", async (req, res) => {
 });
 
 // Define the endpoint for getting a specific product by ID
-router.get("/:productId", async (req, res) => {
+router.get("single/:productId", async (req, res) => {
   try {
     const product = await Product.findById(req.params.productId);
     if (!product) {
@@ -73,7 +73,7 @@ router.get("/:productId", async (req, res) => {
 });
 
 // Define the endpoint for updating a specific product by ID
-router.put("/:productId", async (req, res) => {
+router.put("update/:productId", async (req, res) => {
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.productId,
@@ -90,7 +90,7 @@ router.put("/:productId", async (req, res) => {
 });
 
 // Define the endpoint for deleting a specific product by ID
-router.delete("/:productId", async (req, res) => {
+router.delete("delete/:productId", async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.productId);
     if (!deletedProduct) {

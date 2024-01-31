@@ -3,7 +3,6 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import styles from "../../styles/style";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import { toast } from "react-toastify";
 
 const ShopLogin = () => {
@@ -15,32 +14,28 @@ const ShopLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await axios
-      .post(
+    try {
+      const response = await axios.post(
         `http://localhost:5000/shop/loginshop`,
         {
           email,
           password,
         },
         { withCredentials: true }
-      )
-      .then((res) => {
-        const { email: responseEmail } = res.data;
-        toast.success("Login Success!");
-        navigate("/shop/dashboard",{ state: { email: responseEmail } });
-        console.log(email)
-        window.location.reload(true); 
-      })
-      .catch((err) => {
-        // Check if err.response and err.response.data are defined
-        const errorMessage = err?.response?.data?.message || 'An error occurred';
-      
-        // Display the error message
-        toast.error(errorMessage);
-      });
-      
-  };
+      );
 
+      const { token, isSeller } = response.data;
+      toast.success("Login Success!");
+      
+      // Pass isSeller value in the state when navigating to the dashboard
+      navigate("/shop/dashboard", { state: { isSeller } });
+      
+      window.location.reload(true);
+    } catch (err) {
+      const errorMessage = err?.response?.data?.message || 'An error occurred';
+      toast.error(errorMessage);
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">

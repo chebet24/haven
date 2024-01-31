@@ -67,8 +67,8 @@ const ProductApp = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Add a New Product</h2>
+    <div className="w-[90%] 800px:w-[50%] bg-white shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll">
+     <h2 className="text-[30px] font-Poppins text-center">Add a new product</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label className="pb-2">
