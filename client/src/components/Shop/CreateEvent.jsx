@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { AiOutlinePlusCircle } from 'react-icons/ai';
 
 const CreateEvent = () => {
   const [eventData, setEventData] = useState({
@@ -19,13 +20,30 @@ const CreateEvent = () => {
   const handleChange = (e) => {
     setEventData({ ...eventData, [e.target.name]: e.target.value });
   };
+  const handleImageChange = (e) => {
+    const files = e.target.files;
+    const imagesArray = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          imagesArray.push(reader.result);
+          if (imagesArray.length === files.length) {
+            setEventData({ ...eventData, images: imagesArray });
+          }
+        }
+      };
+      reader.readAsDataURL(files[i]);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       // Make a POST request to your backend API to create a new event
-      const response = await axios.post('http://your-api-endpoint/events', eventData);
+      const response = await axios.post('http://localhost:5000/event/createevent', eventData);
       console.log(response.data); // Log the created event data
     } catch (error) {
       console.error('Error creating event:', error);
@@ -68,20 +86,18 @@ const CreateEvent = () => {
           ></textarea>
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="category" className="pb-2 block">
+        <div>
+          <label className="mb-4">
             Category <span className="text-red-500">*</span>
           </label>
-          <select
-            id="category"
-            className="w-full mt-2 input-field"
+          <input
+            type="text"
+            name="category"
             value={eventData.category}
-            onChange={(e) => setEventData({ ...eventData, category: e.target.value })}
-            required
-          >
-            <option value="">Choose a category</option>
-            {/* Map through your categoriesData and create options */}
-          </select>
+            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            onChange={handleChange}
+            placeholder="Enter your Category..."
+          />
         </div>
 
         <div className="mb-4">

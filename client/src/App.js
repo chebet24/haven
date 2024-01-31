@@ -17,6 +17,7 @@ import ProductDetailsPage from './pages/ProductDetailsPage';
 import ProductsPage from './pages/ProductsPage';
 import ShopDashboardPage from './pages/Shop/ShopDashboardPage';
 import ShopCreateProduct from './pages/Shop/ShopCreateProduct';
+import ShopCreateEvent from './pages/Shop/ShopCreateEvent';
 
 
 function App() {
@@ -49,7 +50,7 @@ function App() {
           path="/dashboard-create-event"
           element={
            
-              <ShopCreateEvent />
+              <ShopCreateEvent/>
             
           }
         />
