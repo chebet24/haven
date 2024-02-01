@@ -1,25 +1,37 @@
 import './App.css';
+import React from 'react';
 import { BrowserRouter,Routes,Route } from 'react-router-dom';
 
-import SignupPage from './pages/Signup/SignupPage';
-import LoginPage from './pages/Login/loginPage';
-import Homepage from "./pages/HomePage";
-// seller
-import ShopCreatePage from './pages/Shop/shopcreate';
-// Admin
-import AdminDashboardPage from './pages/Admin/dashboard';
-import AdminDashboardCategories from './pages/Admin/categories';
-import AdminDashboardUsers from './pages/Admin/users';
-import AdminDashboardSellers from './pages/Admin/sellers';
-import ShopLoginPage from './pages/Shop/shopLogin';
-import AdminDashboardProducts from './pages/Admin/products';
-import ProductDetailsPage from './pages/ProductDetailsPage';
-import ProductsPage from './pages/ProductsPage';
-import ShopDashboardPage from './pages/Shop/ShopDashboardPage';
-import ShopCreateProduct from './pages/Shop/ShopCreateProduct';
-import ShopCreateEvent from './pages/Shop/ShopCreateEvent';
-import ShopProducts from "./pages/Shop/ShopProducts";
-import ShopAllEvents from './pages/Shop/ShopAllEvents';
+import {
+   HomePage,
+    LoginPage,
+     ProductDetailsPage, 
+     ProductsPage, 
+     ShopCreatePage,
+      ShopLoginPage,
+       SignupPage 
+      } from './routes/routes';
+
+
+import {
+   ShopAllEvents,
+    ShopCreateEvent,
+     ShopCreateProduct,
+      ShopDashboardPage,
+       ShopProducts 
+      } from './routes/ShopRoutes';
+
+      // Admin
+      import { 
+        AdminDashboardCategories,
+         AdminDashboardPage,
+          AdminDashboardProducts,
+           AdminDashboardSellers,
+            AdminDashboardUsers 
+          } from './routes/AdminRoutes';
+import { SellerProvider } from './context/SellerContext';
+
+
 
 
 function App() {
@@ -27,24 +39,30 @@ function App() {
     <BrowserRouter>
     <Routes>
       
-       <Route path ="/" element ={<Homepage/>}/> 
+       <Route path ="/" element ={<HomePage/>}/> 
        
      <Route path="/login" element={<LoginPage/>} /> 
     <Route path ="/signup" element ={<SignupPage/>}/>
-    <Route path="/product/:id" element={<ProductDetailsPage />} />
-    <Route path="/products" element={<ProductsPage />} />
+    <Route path="/product/:id" element={<ProductDetailsPage/>} />
+    <Route path="/products" element={<ProductsPage/>} />
 
     {/* Seller */}
     {/* <Route path="/shop/preview/:id" element={<ShopPreviewPage />} /> */}
-        <Route path ="shop/shopcreate" element ={<ShopCreatePage/>}/>
-        <Route path ="shop/login" element ={<ShopLoginPage/>}/>
-        <Route path ="shop/dashboard" element={<ShopDashboardPage/>}/>
-        {/* <Route path="/shop/:id" element={<ShopHomePage />}/> */}
-           <Route
-          path="/dashboard-create-product"
-          element={
-           
-              <ShopCreateProduct />
+        <Route path ="/shopcreate" element ={<ShopCreatePage/>}/>\
+
+
+        <Route
+        path="/shop/*"
+        element={
+       
+          <SellerProvider>
+             <Routes>
+            <Route path="/login" element={<ShopLoginPage />} />
+            <Route path="/dashboard" element={<ShopDashboardPage />} />
+            <Route
+              path="/dashboard-create-product"
+             element={
+             <ShopCreateProduct />
             
           }
         />
@@ -71,6 +89,18 @@ function App() {
             
           }
         />
+        </Routes>
+          
+        </SellerProvider>
+  
+    }
+  />
+    {/* <Route path="/shop/:id" element={<ShopHomePage />}/> */}
+  
+
+
+    
+       
         
      
         {/*
@@ -216,7 +246,7 @@ export default App;
 // import { Elements } from "@stripe/react-stripe-js";
 // import { loadStripe } from "@stripe/stripe-js";
 
-// const App = () => {
+//  = () => {
 //   const [stripeApikey, setStripeApiKey] = useState("");
 
 //   async function getStripeApikey() {
@@ -488,4 +518,4 @@ export default App;
 //   );
 // };
 
-// export default App;
+

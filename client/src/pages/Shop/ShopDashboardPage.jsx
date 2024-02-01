@@ -1,37 +1,36 @@
 import React, { useEffect } from "react";
-import { useLocation } from 'react-router-dom';
-
+import { useLocation } from "react-router-dom";
 import DashboardHeader from "../../components/Shop/Layout/DashboardHeader";
 import DashboardSide from "../../components/Shop/Layout/DashboardSide";
+import DashboardHero from "../../components/Shop/DashboardHero";
+import { useSeller } from "../../context/SellerContext";
 
 const ShopDashboardPage = () => {
   const location = useLocation();
-  const isSeller = location.state?.isSeller;
-  const shop = location.state?.shop ;
+  const { shop, seller, isSeller } = useSeller(); // Include isSeller from useSeller
 
   useEffect(() => {
     // Log seller information when the component mounts
-    console.log("Seller Information:", isSeller);
-  }, [isSeller]);
+    console.log("Seller Information:", seller);
+
+    // Add additional logging for seller properties
+    console.log("Seller ID:", seller?._id);
+    console.log("Seller Name:", seller?.name);
+    console.log("Is Seller:", isSeller);
+  }, [seller, isSeller]);
 
   return (
     <div>
-      <h1>Welcome to the Dashboard</h1>
-      {isSeller !== undefined ? (
+      {seller !== null ? (
         <>
-          <p>{isSeller ? 'You are a seller' : 'You are not a seller'}</p>
-          {/* <div>
-        <h2>Seller Information:</h2>
-        <p>Name: {shop.name}</p>
-        {/* Add other shop details as needed */}
-      {/* </div>  */}
-          <DashboardHeader isSeller={isSeller} shop={shop} />
-           {/* <div className="flex items-start justify-between w-full">
+
+          <DashboardHeader />
+          <div className="flex items-start justify-between w-full">
             <div className="w-[80px] 800px:w-[330px]">
               <DashboardSide active={1} />
             </div>
             {/* <DashboardHero /> */}
-          {/* </div> */} 
+          </div>
         </>
       ) : (
         <p>Loading...</p>

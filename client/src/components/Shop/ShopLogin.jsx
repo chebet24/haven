@@ -4,17 +4,22 @@ import styles from "../../styles/style";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import {useSeller} from '../../context/SellerContext'
 
 const ShopLogin = () => {
   const navigate = useNavigate();
+  const { setSellerData, isSeller } = useSeller();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      setIsFetching(true);
+
       const response = await axios.post(
         `http://localhost:5000/shop/loginshop`,
         {
@@ -26,20 +31,33 @@ const ShopLogin = () => {
 
       console.log('Login Response:', response.data);
 
-      const { token, role ,shop } = response.data;
+      const { token, role, shop } = response.data;
       const isSeller = role === 'Seller';
-      console.log(isSeller);
+
+      setSellerData(isSeller, shop, email);
+      console.log('Setting isSeller:', isSeller);
+
       toast.success("Login Success!");
 
       // Pass isSeller value in the state when navigating to the dashboard
-      navigate("/shop/dashboard", { state: { isSeller , shop  } });
+      navigate("/shop/dashboard");
 
-      window.location.reload(true);
+      // window.location.reload(true);
     } catch (err) {
       const errorMessage = err?.response?.data?.message || 'An error occurred';
       toast.error(errorMessage);
+    } finally {
+      setIsFetching(false);
     }
   };
+
+  useEffect(() => {
+    // This useEffect will log the updated isSeller value
+    console.log('Updated isSeller:', isSeller);
+  }, [isSeller]);
+
+
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">

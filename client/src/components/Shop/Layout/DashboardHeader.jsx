@@ -4,39 +4,38 @@ import { MdOutlineLocalOffer } from "react-icons/md";
 import { FiPackage, FiShoppingBag } from "react-icons/fi";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import { useSeller } from "../../../context/SellerContext";
 
-const DashboardHeader = ({ isSeller, shop }) => {
+const DashboardHeader = () => {
+  const { isSeller, shop } = useSeller();
   const email = shop?.email;
   const [seller, setSeller] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [imageUrl, setImageUrl] = useState(null);
 
   useEffect(() => {
     const fetchSellerData = async () => {
       try {
+        console.log(`Fetching data for seller: http://localhost:5000/shop/${email}`);
         const response = await fetch(`http://localhost:5000/shop/${email}`, {
           method: 'GET',
           credentials: 'include',
         });
-    
+
         if (!response.ok) {
           throw new Error(`Failed to fetch seller data. Status: ${response.status}`);
         }
-    
+
         const data = await response.json();
-       
+
         setSeller(data.shop);
-        setImageUrl(data.shop.avatar?.url);
-         console.log('Fetched seller data:', data);
+        console.log('Fetched seller data:', data);
       } catch (error) {
         console.error('Error during fetch:', error);
         // Handle the error as needed
-      }
-      finally {
+      } finally {
         setLoading(false); // Set loading to false after the fetch is complete
       }
     };
-    
 
     if (email) {
       fetchSellerData();
@@ -46,11 +45,12 @@ const DashboardHeader = ({ isSeller, shop }) => {
   return (
     <div className="w-full h-[80px] bg-red shadow sticky top-0 left-0 z-30 flex items-center justify-between px-4">
       <div>
-        <Link to="shop/dashboard">
+        <Link to="/dashboard">
           <img src="" alt="avatar" />
         </Link>
+        <p>{isSeller ? `Welcome ${seller?.name}` : 'You are not a seller'}</p>
       </div>
-      {!loading && seller && isSeller &&  ( // Check if seller is not null before rendering content
+      {!loading && seller && ( // Check if seller is not null before rendering content
         <div className="flex items-center">
           <div className="flex items-center mr-4">
             <Link to="/dashboard/coupons" className="lg:block ">
@@ -85,22 +85,20 @@ const DashboardHeader = ({ isSeller, shop }) => {
               />
             </Link>
             {seller.avatar && (
-            <Link to={`/shop/${seller.email}`}>
-              <img
-                src={seller.avatar}
-                alt=""
-                className="w-[50px] h-[50px] rounded-full object-cover"
-              />
-            </Link>
-          )}
+              <Link to={`/shop/${seller._id}`}>
+                <img
+                  src={seller.avatar}
+                  alt=""
+                  className="w-[50px] h-[50px] rounded-full object-cover"
+                />
+              </Link>
+            )}
           </div>
         </div>
       )}
-       {console.log('Seller:', seller)}
-    {console.log('Is Seller:', isSeller)}
-    {console.log('Loading:', loading)}
-    {console.log('Conditions:', !loading, seller, isSeller)}
-    {console.log('Image URL:', seller.avatar.url)}
+      {console.log('Seller:', seller)}
+      {console.log('Is Seller:', isSeller)}
+      {console.log('Loading:', loading)}
     </div>
   );
 };

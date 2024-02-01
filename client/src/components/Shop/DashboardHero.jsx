@@ -1,45 +1,51 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineArrowRight, AiOutlineMoneyCollect } from "react-icons/ai";
 import styles from "../../styles/style";
 import { Link } from "react-router-dom";
 import { MdBorderClear } from "react-icons/md";
-import { useDispatch, useSelector } from "react-redux";
-import { Button } from "antd";
-import { Table } from "antd";
-// import "antd/dist/antd.css";
-import { getAllOrdersOfShop } from "../../redux/actions/order"
-import{ getAllProductsShop} from "../../redux/actions/product"
+import Button from "@mui/material/Button";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 
 const DashboardHero = () => {
-  const dispatch = useDispatch();
-  const { orders } = useSelector((state) => state.order);
-  const { seller } = useSelector((state) => state.seller);
-  const { products } = useSelector((state) => state.products);
+  const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [seller, setSeller] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(getAllOrdersOfShop(seller._id));
-    dispatch(getAllProductsShop(seller._id));
-  }, [dispatch]);
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch seller information
+        const sellerResponse = await fetch("http://localhost:5000/seller"); // Replace with your seller API endpoint
+        const sellerData = await sellerResponse.json();
+        setSeller(sellerData);
+
+        // Fetch orders
+        const ordersResponse = await fetch(`http://localhost:5000/orders/${sellerData._id}`); // Replace with your orders API endpoint
+        const ordersData = await ordersResponse.json();
+        setOrders(ordersData);
+
+        // Fetch products
+        const productsResponse = await fetch(`http://localhost:5000/products/${sellerData._id}`); // Replace with your products API endpoint
+        const productsData = await productsResponse.json();
+        setProducts(productsData);
+      } catch (error) {
+        console.error("Error during fetch:", error);
+      } finally {
+        setLoading(false); // Set loading to false after the fetch is complete
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const availableBalance = seller?.availableBalance.toFixed(2);
-
-  const columns = [
-    { title: "Order ID", dataIndex: "id", key: "id" },
-    { title: "Status", dataIndex: "status", key: "status" },
-    { title: "Items Qty", dataIndex: "itemsQty", key: "itemsQty" },
-    { title: "Total", dataIndex: "total", key: "total" },
-    {
-      title: "Action",
-      key: "action",
-      render: (text, record) => (
-        <Link to={`/dashboard/order/${record.id}`}>
-          <Button>
-            <AiOutlineArrowRight size={20} />
-          </Button>
-        </Link>
-      ),
-    },
-  ];
 
   const orderRows = orders?.map((item) => ({
     id: item._id,
@@ -94,7 +100,36 @@ const DashboardHero = () => {
       <br />
       <h3 className="text-[22px] font-Poppins pb-2">Latest Orders</h3>
       <div className="w-full min-h-[45vh] bg-white rounded">
-        <Table columns={columns} dataSource={orderRows} pagination={{ pageSize: 10 }} />
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Order ID</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Items Qty</TableCell>
+                <TableCell>Total</TableCell>
+                <TableCell>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {orderRows.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell>{row.id}</TableCell>
+                  <TableCell>{row.status}</TableCell>
+                  <TableCell>{row.itemsQty}</TableCell>
+                  <TableCell>{row.total}</TableCell>
+                  <TableCell>
+                    <Link to={`/dashboard/order/${row.id}`}>
+                      <Button>
+                        <AiOutlineArrowRight size={20} />
+                      </Button>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
     </div>
   );

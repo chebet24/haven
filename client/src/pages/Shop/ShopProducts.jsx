@@ -1,22 +1,23 @@
-import React from 'react'
-import DashboardHeader from '../../components/Shop/Layout/DashboardHeader'
-import DashboardSideBar from '../../components/Shop/Layout/DashboardSide'
-import AllProducts from "../../components/Shop/AllProducts";
+// import React from 'react'
+// import DashboardHeader from '../../components/Shop/Layout/DashboardHeader'
+// import DashboardSideBar from '../../components/Shop/Layout/DashboardSide'
+// import AllProducts from "../../components/Shop/AllProducts";
+// import
+// const ShopProducts = () => {
+//   const [seller, setSeller] = useContext(SellerContext);
+//   return (
+//     <div>
+//         <DashboardHeader isSeller={isSeller} shop={shop}/>
+//         <div className="flex justify-between w-full">
+//             <div className="w-[80px] 800px:w-[330px]">
+//               <DashboardSideBar active={3} />
+//             </div>
+//             <div className="w-full justify-center flex">
+//                 <AllProducts />
+//             </div>
+//           </div>
+//     </div>
+//   )
+// }
 
-const ShopProducts = () => {
-  return (
-    <div>
-        <DashboardHeader />
-        <div className="flex justify-between w-full">
-            <div className="w-[80px] 800px:w-[330px]">
-              <DashboardSideBar active={3} />
-            </div>
-            <div className="w-full justify-center flex">
-                <AllProducts />
-            </div>
-          </div>
-    </div>
-  )
-}
-
-export default ShopProducts
+// export default ShopProducts
