@@ -24,12 +24,16 @@ const ShopLogin = () => {
         { withCredentials: true }
       );
 
-      const { token, isSeller } = response.data;
+      console.log('Login Response:', response.data);
+
+      const { token, role ,shop } = response.data;
+      const isSeller = role === 'Seller';
+      console.log(isSeller);
       toast.success("Login Success!");
-      
+
       // Pass isSeller value in the state when navigating to the dashboard
-      navigate("/shop/dashboard", { state: { isSeller } });
-      
+      navigate("/shop/dashboard", { state: { isSeller , shop  } });
+
       window.location.reload(true);
     } catch (err) {
       const errorMessage = err?.response?.data?.message || 'An error occurred';

@@ -1,36 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineGift } from "react-icons/ai";
 import { MdOutlineLocalOffer } from "react-icons/md";
 import { FiPackage, FiShoppingBag } from "react-icons/fi";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { BiMessageSquareDetail } from "react-icons/bi";
+import { Link } from "react-router-dom";
 
-
-const DashboardHeader = (props) => {
-  const email = props.location?.state?.email;
+const DashboardHeader = ({ isSeller, shop }) => {
+  const email = shop?.email;
   const [seller, setSeller] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [imageUrl, setImageUrl] = useState(null);
 
   useEffect(() => {
     const fetchSellerData = async () => {
       try {
-        const response = await fetch(`https://localhost:5000/api/shop/${email}`, {
+        const response = await fetch(`http://localhost:5000/shop/${email}`, {
           method: 'GET',
           credentials: 'include',
         });
-
+    
         if (!response.ok) {
-          throw new Error('Failed to fetch seller data');
+          throw new Error(`Failed to fetch seller data. Status: ${response.status}`);
         }
-
+    
         const data = await response.json();
-        setSeller(data.seller);
-        console.log(data.seller)
+       
+        setSeller(data.shop);
+        setImageUrl(data.shop.avatar?.url);
+         console.log('Fetched seller data:', data);
       } catch (error) {
         console.error('Error during fetch:', error);
         // Handle the error as needed
       }
+      finally {
+        setLoading(false); // Set loading to false after the fetch is complete
+      }
     };
+    
 
     if (email) {
       fetchSellerData();
@@ -40,58 +46,61 @@ const DashboardHeader = (props) => {
   return (
     <div className="w-full h-[80px] bg-red shadow sticky top-0 left-0 z-30 flex items-center justify-between px-4">
       <div>
-        <Link to="/dashboard">
-          <img
-            src=""
-            alt="avatar"
-          />
+        <Link to="shop/dashboard">
+          <img src="" alt="avatar" />
         </Link>
       </div>
-      {seller && ( // Check if seller is not null before rendering content
+      {!loading && seller && isSeller &&  ( // Check if seller is not null before rendering content
         <div className="flex items-center">
           <div className="flex items-center mr-4">
-          <Link to="/dashboard/cupouns" className="800px:block hidden">
-            <AiOutlineGift
-              color="#555"
-              size={30}
-              className="mx-5 cursor-pointer"
-            />
-          </Link>
-          <Link to="/dashboard-events" className="800px:block hidden">
-            <MdOutlineLocalOffer
-              color="#555"
-              size={30}
-              className="mx-5 cursor-pointer"
-            />
-          </Link>
-          <Link to="/dashboard-products" className="800px:block hidden">
-            <FiShoppingBag
-              color="#555"
-              size={30}
-              className="mx-5 cursor-pointer"
-            />
-          </Link>
-          <Link to="/dashboard-orders" className="800px:block hidden">
-            <FiPackage color="#555" size={30} className="mx-5 cursor-pointer" />
-          </Link>
-          <Link to="/dashboard-messages" className="800px:block hidden">
-            <BiMessageSquareDetail
-              color="#555"
-              size={30}
-              className="mx-5 cursor-pointer"
-            />
-          </Link>
-            {/* ... (rest of the component) */}
+            <Link to="/dashboard/coupons" className="lg:block ">
+              <AiOutlineGift
+                color="#555"
+                size={30}
+                className="mx-5 cursor-pointer"
+              />
+            </Link>
+            <Link to="/dashboard-events" className="lg:block">
+              <MdOutlineLocalOffer
+                color="#555"
+                size={30}
+                className="mx-5 cursor-pointer"
+              />
+            </Link>
+            <Link to="/dashboard-products" className="lg:block">
+              <FiShoppingBag
+                color="#555"
+                size={30}
+                className="mx-5 cursor-pointer"
+              />
+            </Link>
+            <Link to="/dashboard-orders" className="lg:block">
+              <FiPackage color="#555" size={30} className="mx-5 cursor-pointer" />
+            </Link>
+            <Link to="/dashboard-messages" className="lg:block">
+              <BiMessageSquareDetail
+                color="#555"
+                size={30}
+                className="mx-5 cursor-pointer"
+              />
+            </Link>
+            {seller.avatar && (
             <Link to={`/shop/${seller.email}`}>
               <img
-                src={`${seller.avatar?.url}`}
+                src={seller.avatar}
                 alt=""
                 className="w-[50px] h-[50px] rounded-full object-cover"
               />
             </Link>
+          )}
           </div>
         </div>
       )}
+       {console.log('Seller:', seller)}
+    {console.log('Is Seller:', isSeller)}
+    {console.log('Loading:', loading)}
+    {console.log('Conditions:', !loading, seller, isSeller)}
+    {console.log('Image URL:', seller.avatar.url)}
     </div>
   );
 };

@@ -48,17 +48,33 @@ router.post('/loginshop', async (req, res) => {
 
     // Generate JWT token
     const token = shop.getJwtToken();
-    const isSeller = shop.isSeller; // Assuming you have an isSeller property in your Shop model
 
-    // Send the token and isSeller information in the response
-    return res.json({ token, isSeller });
-
-    
+    // Send the token and role in the response
+    return res.json({ token, role: shop.role ,shop });
   } catch (error) {
     // Handle errors and send a single error response
     return res.status(500).json({ error: error.message });
   }
 });
+
+
+router.get("/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    // Check if the shop exists
+    const shop = await Shop.findOne({ email }).select("-password");
+
+    if (!shop) {
+      return res.status(404).json({ message: 'Shop not found' });
+    }
+
+    res.json({ shop });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 
 // Route to get all shops
