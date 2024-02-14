@@ -16,7 +16,7 @@ const Categories = () => {
         // setBrandingData(brandingResponse.data);
 
         // Fetch categories data using Axios
-        const categoriesResponse = await axios.get(" http://localhost:5000/category/all"); // Replace with your actual API endpoint
+        const categoriesResponse = await axios.get("http://localhost:5000/category/all"); // Replace with your actual API endpoint
         setCategoriesData(categoriesResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);

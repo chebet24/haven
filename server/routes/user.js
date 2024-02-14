@@ -48,11 +48,12 @@ router.post("/login", async (req, res) => {
     // Generate JWT token
     const token = user.getJwtToken();
 
-    res.json({ token });
+    res.json({ token, user });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 router.get("/all", async (req, res) => {
   try {
     const users = await User.find().select('-password');

@@ -22,15 +22,26 @@ const Login = () => {
         { withCredentials: true }
       );
 
-      const { accessToken, user } = response.data;
+      const { token, user } = response.data;
+      console.log(token);
+      console.log(user)
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
 
       // Store the access token and user details in local storage
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('user', JSON.stringify(user));
+       localStorage.getItem('token');
+      localStorage.getItem('user');
+
+      console.log('Stored AccessToken:', token);
+       console.log('Stored User:', user);
+
 
       toast.success("Login Success!");
       navigate("/");
-      window.location.reload(true); 
+      
+     
     } catch (error) {
       toast.error(error.response.data.message);
     }

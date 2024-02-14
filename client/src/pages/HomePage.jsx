@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import Header from "../components/Layout/Header";
 import Hero from "../components/Route/Hero/Hero";
 import Categories from "../components/Route/Categories/Categories";
@@ -11,16 +11,26 @@ import Categories from "../components/Route/Categories/Categories";
 const HomePage = () => {
   return (
     <div>
-        <Header  activeHeading={1}/>
-          <Hero />
+      {/* Header (Nav bar) */}
+      <Header activeHeading={1} />
+
+      <div style={{ display: 'flex' }}>
+        {/* Sidebar (Categories) */}
+        <div style={{ flex: '0 0 10%', backgroundColor: 'green', padding: '10px' }}>
         <Categories />
-        {/* <BestDeals />  */}
-        {/* <Events /> */}
-        {/* <FeaturedProduct />  */}
-    
-        {/* <Footer />   */}
+        </div>
+
+        {/* Main Content */}
+        <div style={{ flex: '1', padding: '20px' }}>
+          <Hero />
+          {/* <BestDeals />  */}
+          {/* <Events /> */}
+          {/* <FeaturedProduct />  */}
+          {/* <Footer />   */}
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default HomePage
+export default HomePage;

@@ -7,10 +7,11 @@ import { Link } from "react-router-dom";
 import { useSeller } from "../../../context/SellerContext";
 
 const DashboardHeader = () => {
-  const { isSeller, shop } = useSeller();
-  const email = shop?.email;
+  const { userData } = useSeller();
+  const email = userData?.email;
   const [seller, setSeller] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { isSeller, shop } = userData;
 
   useEffect(() => {
     const fetchSellerData = async () => {
@@ -48,7 +49,7 @@ const DashboardHeader = () => {
         <Link to="/dashboard">
           <img src="" alt="avatar" />
         </Link>
-        <p>{isSeller ? `Welcome ${seller?.name}` : 'You are not a seller'}</p>
+        <p>{userData?.isSeller ? `Welcome ${seller?.name}` : 'You are not a seller'}</p>
       </div>
       {!loading && seller && ( // Check if seller is not null before rendering content
         <div className="flex items-center">

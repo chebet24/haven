@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter,Routes,Route } from 'react-router-dom';
 
 import {
+  EventsPage,
    HomePage,
     LoginPage,
      ProductDetailsPage, 
@@ -45,6 +46,7 @@ function App() {
     <Route path ="/signup" element ={<SignupPage/>}/>
     <Route path="/product/:id" element={<ProductDetailsPage/>} />
     <Route path="/products" element={<ProductsPage/>} />
+    <Route path ="/events" element={<EventsPage/>}/>
 
     {/* Seller */}
     {/* <Route path="/shop/preview/:id" element={<ShopPreviewPage />} /> */}
@@ -59,6 +61,7 @@ function App() {
              <Routes>
             <Route path="/login" element={<ShopLoginPage />} />
             <Route path="/dashboard" element={<ShopDashboardPage />} />
+            {/* <Route path ="/events" element={<EventsPage/>}/> */}
             <Route
               path="/dashboard-create-product"
              element={

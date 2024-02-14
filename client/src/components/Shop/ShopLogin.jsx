@@ -1,18 +1,24 @@
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import styles from "../../styles/style";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import {useSeller} from '../../context/SellerContext'
 
 const ShopLogin = () => {
   const navigate = useNavigate();
-  const { setSellerData, isSeller } = useSeller();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
+
+  useEffect(() => {
+    // Load saved seller information from localStorage
+    const storedSellerData = JSON.parse(localStorage.getItem("sellerData"));
+    if (storedSellerData) {
+      setEmail(storedSellerData.email);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,33 +35,31 @@ const ShopLogin = () => {
         { withCredentials: true }
       );
 
-      console.log('Login Response:', response.data);
+      console.log("Login Response:", response.data);
 
       const { token, role, shop } = response.data;
-      const isSeller = role === 'Seller';
+      const isSeller = role === "Seller";
 
-      setSellerData(isSeller, shop, email);
-      console.log('Setting isSeller:', isSeller);
+      console.log("Setting isSeller:", isSeller);
 
       toast.success("Login Success!");
 
+      // Save seller information to localStorage
+      const sellerDataToStore = { isSeller, shop, email };
+      localStorage.setItem("sellerData", JSON.stringify(sellerDataToStore));
+
+      console.log("Navigating to /shop/dashboard");
+
       // Pass isSeller value in the state when navigating to the dashboard
       navigate("/shop/dashboard");
-
-      // window.location.reload(true);
     } catch (err) {
-      const errorMessage = err?.response?.data?.message || 'An error occurred';
+      const errorMessage =
+        err?.response?.data?.message || "An error occurred";
       toast.error(errorMessage);
     } finally {
       setIsFetching(false);
     }
   };
-
-  useEffect(() => {
-    // This useEffect will log the updated isSeller value
-    console.log('Updated isSeller:', isSeller);
-  }, [isSeller]);
-
 
 
   return (

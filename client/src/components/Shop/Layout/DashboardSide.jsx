@@ -8,13 +8,15 @@ import { CiMoneyBill, CiSettings } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import { HiOutlineReceiptRefund } from "react-icons/hi";
+import { useSeller } from '../../../context/SellerContext';
 
 const DashboardSide = ({ active }) => {
+  const { userData } = useSeller(); 
   return (
     <div className="w-full h-[90vh] bg-white shadow-sm overflow-y-scroll sticky top-0 left-0 z-10">
       {/* single item */}
       <div className="w-full flex items-center p-4">
-        <Link to="shop/dashboard" className="w-full flex items-center">
+        <Link to="/shop/dashboard" className="w-full flex items-center">
           <RxDashboard
             size={30}
             color={`${active === 1 ? "crimson" : "#555"}`}
@@ -28,6 +30,8 @@ const DashboardSide = ({ active }) => {
           </h5>
         </Link>
       </div>
+      {userData && (
+        <>
       <div className="w-full flex items-center p-4">
         <Link
           to="/shop/dashboard-create-product"
@@ -48,7 +52,7 @@ const DashboardSide = ({ active }) => {
       </div>
 
       <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-products" className="w-full flex items-center">
+        <Link to="/shop/dashboard-products" className="w-full flex items-center">
           <FiPackage size={30} color={`${active === 3 ? "crimson" : "#555"}`} />
           <h5
             className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
@@ -61,7 +65,7 @@ const DashboardSide = ({ active }) => {
       </div>
 
       <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-orders" className="w-full flex items-center">
+        <Link to="/shop/dashboard-orders" className="w-full flex items-center">
           <FiShoppingBag
             size={30}
             color={`${active === 2 ? "crimson" : "#555"}`}
@@ -76,7 +80,7 @@ const DashboardSide = ({ active }) => {
         </Link>
       </div>
       <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-create-event" className="w-full flex items-center">
+        <Link to="/shop/dashboard-create-event" className="w-full flex items-center">
           <VscNewFile
             size={30}
             color={`${active === 6 ? "crimson" : "#555"}`}
@@ -91,7 +95,7 @@ const DashboardSide = ({ active }) => {
         </Link>
       </div>
       <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-events" className="w-full flex items-center">
+        <Link to="/shop/dashboard-events" className="w-full flex items-center">
           <MdOutlineLocalOffer
             size={30}
             color={`${active === 5 ? "crimson" : "#555"}`}
@@ -108,7 +112,7 @@ const DashboardSide = ({ active }) => {
 
       <div className="w-full flex items-center p-4">
         <Link
-          to="/dashboard-withdraw-money"
+          to="/shop/dashboard-withdraw-money"
           className="w-full flex items-center"
         >
           <CiMoneyBill
@@ -188,6 +192,8 @@ const DashboardSide = ({ active }) => {
           </h5>
         </Link>
       </div>
+      </>
+      )}
     </div>
   );
 };

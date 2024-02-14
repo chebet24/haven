@@ -32,6 +32,8 @@ const Header = ({ activeHeading }) => {
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishlist] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); 
+  const [user, setUser] = useState(null); 
 
   const handleSearchChange = (e) => {
 //     const term = e.target.value;
@@ -70,42 +72,27 @@ const Header = ({ activeHeading }) => {
 
     setOpenCart(false);
   };
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
 
+  
   useEffect(() => {
-    // Check for the presence of a token in local storage or cookies
-    const token = localStorage.getItem('accessToken'); // Replace with your token storage mechanism
+    const storedAccessToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
 
-    if (token) {
-      // If a token is present, consider the user authenticated
+    if (storedAccessToken && storedUser) {
+      const accessToken = storedAccessToken;
+      const parsedUser = JSON.parse(storedUser);
+
       setIsAuthenticated(true);
-      // You might want to decode the token to get user information and set the 'user' state
-      // Example: const decodedUser = jwt_decode(token);
-      // setUser(decodedUser);
-    } else {
-      // If no token is present, consider the user not authenticated
-      setIsAuthenticated(false);
-      setUser(null);
+      setUser(parsedUser);
     }
-  }, []); // This effect runs only once when the component mounts
+  }, []);  // Empty dependency array ensures this effect runs only once, similar to componentDidMount
 
-  // Mock login function (set token to localStorage for demonstration purposes)
-  const login = () => {
-    const fakeToken = 'your_fake_token';
-    localStorage.setItem('accessToken', fakeToken);
-    setIsAuthenticated(true);
-    // You might want to decode the token to get user information and set the 'user' state
-    // Example: const decodedUser = jwt_decode(fakeToken);
-    // setUser(decodedUser);
-  };
-
-  // Mock logout function (remove token from localStorage)
   const logout = () => {
     localStorage.removeItem('accessToken');
     setIsAuthenticated(false);
     setUser(null);
   };
+
 
   return (
     <>
@@ -369,7 +356,7 @@ const Header = ({ activeHeading }) => {
                   <div>
                     <Link to="/profile">
                       <img
-                        src={`${user.avatar?.url}`}
+                        src={`${user.avatar}`}
                         alt="${user.name}"
                         className="w-[60px] h-[60px] rounded-full border-[3px] border-[#0eae88]"
                       />

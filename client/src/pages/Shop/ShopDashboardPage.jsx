@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import DashboardHeader from "../../components/Shop/Layout/DashboardHeader";
 import DashboardSide from "../../components/Shop/Layout/DashboardSide";
 import DashboardHero from "../../components/Shop/DashboardHero";
@@ -23,17 +23,21 @@ const ShopDashboardPage = () => {
     <div>
       {seller !== null ? (
         <>
-
           <DashboardHeader />
           <div className="flex items-start justify-between w-full">
             <div className="w-[80px] 800px:w-[330px]">
               <DashboardSide active={1} />
             </div>
-            {/* <DashboardHero /> */}
+            <DashboardHero />
           </div>
         </>
       ) : (
-        <p>Loading...</p>
+        <div className="flex items-center justify-center h-screen">
+          <p>No seller information found. Please</p>
+          <Link to="/shop/login" className="ml-2 text-blue-600">
+            login
+          </Link>
+        </div>
       )}
     </div>
   );

@@ -1,8 +1,8 @@
+// ProductsPage.js
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
-import { SyncLoader } from "react-spinners"; // Import SyncLoader from react-spinners
-
+import { SyncLoader } from "react-spinners";
 import Header from "../components/Layout/Header";
 import ProductCard from "../components/Route/ProductCard/ProductCard";
 import styles from "../styles/style";
@@ -12,14 +12,12 @@ const ProductsPage = () => {
   const categoryData = searchParams.get("category");
   const [allProducts, setAllProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/product/all`
-        );
+        const response = await axios.get("http://localhost:5000/product/all");
         setAllProducts(response.data);
         setIsLoading(false);
       } catch (error) {
@@ -29,13 +27,16 @@ const ProductsPage = () => {
     };
 
     fetchData();
-  }, []); // The empty dependency array ensures the useEffect runs only once on mount
+  }, []);
 
   useEffect(() => {
     if (categoryData === null) {
-      setData(allProducts);
+      setFilteredProducts(allProducts);
     } else {
-      setData(allProducts.filter((i) => i.title.includes(categoryData)));
+      const filtered = allProducts.filter((product) =>
+        product.category.includes(categoryData)
+      );
+      setFilteredProducts(filtered);
     }
   }, [allProducts, categoryData]);
 
@@ -51,15 +52,13 @@ const ProductsPage = () => {
               <SyncLoader color="#36D7B7" size={15} margin={5} />
             </div>
           ) : (
-            <div  className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-cols-5 xl:gap-[30px] mb-12">
-            {data.map((i, index) => (
-              <ProductCard data={i} key={index} />
-            ))}
-          </div>
-          
-          
+            <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-cols-5 xl:gap-[30px] mb-12">
+              {filteredProducts.map((product, index) => (
+                <ProductCard key={index} data={product} />
+              ))}
+            </div>
           )}
-          {data.length === 0 && !isLoading ? (
+          {filteredProducts.length === 0 && !isLoading ? (
             <h1 className="text-center w-full pb-[100px] text-[20px]">
               No products Found!
             </h1>
@@ -72,4 +71,6 @@ const ProductsPage = () => {
 };
 
 export default ProductsPage;
- 
+
+
+

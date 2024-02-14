@@ -4,18 +4,19 @@ import { AiOutlinePlusCircle } from 'react-icons/ai';
 
 const ProductApp = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     tags: '',
-    category:'',
+    categoryId: '', 
     originalPrice: 0,
     discountPrice: 0,
     stock: 0,
     images: [],
   });
 
-  const { name, description, tags,category, originalPrice, discountPrice, stock, images } = formData;
+  const { name, description, tags, categoryId, originalPrice, discountPrice, stock, images } = formData;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -65,6 +66,20 @@ const ProductApp = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
+  
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories(); // Fetch categories on component mount
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/category/all');
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Error fetching categories:', error.message);
+    }
+  };
 
   return (
     <div className="w-[90%] 800px:w-[50%] bg-white shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll">
@@ -114,17 +129,20 @@ const ProductApp = () => {
         </div>
         <br />
         <div>
-          <label className="pb-2">
+        <label className="pb-2">
             Category <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
-            name="category"
-            value={category}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          <select
+            name="categoryId"
+            value={categoryId}
             onChange={handleChange}
-            placeholder="Enter your Category..."
-          />
+            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+            <option value="" disabled>Select a category</option>
+            {categories.map(category => (
+              <option key={category._id} value={category._id}>{category.name}</option>
+            ))}
+          </select>
         </div>
         <br />
         <div>

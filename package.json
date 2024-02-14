@@ -1,0 +1,32 @@
+{
+  "name": "haven",
+  "version": "1.0.0",
+  "description": "haven backend",
+  "main": "Server/server.js",
+  "scripts": {
+    "dev": "nodemon Server/server.js",
+    "start": "node Server/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chebet24/haventure.git"
+  },
+  "author": "chebet",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chebet24/haventure/issues"
+  },
+  "homepage": "https://github.com/chebet24/haventure#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.1.0",
+    "nodemon": "^3.0.3"
+  },
+  "keywords": []
+}

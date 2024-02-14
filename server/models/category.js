@@ -1,15 +1,19 @@
-// CategoryModel.js
-
+// model.js
 const mongoose = require('mongoose');
 
 const categorySchema = new mongoose.Schema({
-  name: String,
-  description: String,
-  images: {
-    type: [String], // Assuming storing image URLs
+  name: {
+    type: String,
     required: true,
   },
-//  items: [{ type: String }],
+  description: {
+    type: String,
+    required: true,
+  },
+  subcategories: [{
+    name: String,
+    description: String,
+  }],
 });
 
 const Category = mongoose.model('Category', categorySchema);
