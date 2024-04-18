@@ -1,25 +1,48 @@
 import './App.css';
 import React from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 import { BrowserRouter,Routes,Route } from 'react-router-dom';
+import { useEffect } from 'react';
 
 import {
   EventsPage,
    HomePage,
     LoginPage,
+    SignupPage ,
      ProductDetailsPage, 
      ProductsPage, 
      ShopCreatePage,
       ShopLoginPage,
-       SignupPage 
-      } from './routes/routes';
+      ProfilePage,
+      UserInbox,
+      BestSellingPage,
+      FAQPage,
+      Cart,
+      OrderSuccessPage,
+      OrderDetailsPage,
+      TrackOrderPage,
+      
+       
 
+       CheckoutPage,
+       PaymentPage
+      } from './routes/routes';
+import ProtectedRoute from './routes/ProtectedRoute';
 
 import {
    ShopAllEvents,
     ShopCreateEvent,
      ShopCreateProduct,
       ShopDashboardPage,
-       ShopProducts 
+       ShopProducts ,
+       ShopPreviewPage,
+       ShopCoupouns,
+       ShopSettings,
+       ShopInbox,
+       ShopAllOrders,
+       ShopOrderDetails,
+       ShopRefunds
       } from './routes/ShopRoutes';
 
       // Admin
@@ -31,11 +54,18 @@ import {
             AdminDashboardUsers 
           } from './routes/AdminRoutes';
 import { SellerProvider } from './context/SellerContext';
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+import ShopHomePage from './pages/Shop/ShopHomePage';
+import { UserProvider } from './context/UserContext';
 
 
+ 
 
+const App = () => {
+ 
 
-function App() {
   return (
     <BrowserRouter>
     <Routes>
@@ -46,11 +76,73 @@ function App() {
     <Route path ="/signup" element ={<SignupPage/>}/>
     <Route path="/product/:id" element={<ProductDetailsPage/>} />
     <Route path="/products" element={<ProductsPage/>} />
+    <Route path ="/cart" element={<Cart/>}/>
+    <Route path="/best-selling" element={<BestSellingPage />} />
     <Route path ="/events" element={<EventsPage/>}/>
+    <Route path ="/checkout" element ={<CheckoutPage/>}/>
+    <Route path="/faq" element={<FAQPage />} />
 
+    
+    <Route
+          path="/inbox"
+          element={
+            <UserProvider>
+              <ProtectedRoute>
+                <UserInbox />
+              </ProtectedRoute>
+            </UserProvider>
+          }
+        />
+
+
+    <Route path="/order/success" element={<OrderSuccessPage />} />
+        <Route
+          path="/profile"
+          element={
+            <UserProvider>
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+            </UserProvider>
+          }
+        />
+      
+        <Route
+          path="/user/order/:id"
+          element={
+            <UserProvider>
+            <ProtectedRoute>
+              <OrderDetailsPage />
+            </ProtectedRoute>
+            </UserProvider>
+          }
+        />
+        {/* <Route
+          path="/user/track/order/:id"
+          element={
+            <UserProvider>
+            <ProtectedRoute>
+              <TrackOrderPage />
+            </ProtectedRoute>
+            </UserProvider>
+            
+          }
+        /> */}
+
+
+    <Route path = "/payment" 
+    element={
+      <UserProvider>
+        <ProtectedRoute>
+          <PaymentPage/>
+          </ProtectedRoute>
+          </UserProvider>
+        }/>
+
+    
     {/* Seller */}
-    {/* <Route path="/shop/preview/:id" element={<ShopPreviewPage />} /> */}
-        <Route path ="/shopcreate" element ={<ShopCreatePage/>}/>\
+    <Route path="/shop/preview/:id" element={<ShopPreviewPage/>} />
+        <Route path ="/shopcreate" element ={<ShopCreatePage/>}/>
 
 
         <Route
@@ -59,6 +151,7 @@ function App() {
        
           <SellerProvider>
              <Routes>
+             <Route path ="/shopcreate" element ={<ShopCreatePage/>}/>
             <Route path="/login" element={<ShopLoginPage />} />
             <Route path="/dashboard" element={<ShopDashboardPage />} />
             {/* <Route path ="/events" element={<EventsPage/>}/> */}
@@ -92,13 +185,59 @@ function App() {
             
           }
         />
-        </Routes>
+           <Route 
+        path ="/dashboard-coupons"
+        element={
+          <ShopCoupouns/>
+        }
+          />
+          <Route 
+          path ="/settings"
+          element={
+          <ShopSettings/>
+        }
+          />
+              <Route
+              path="/dashboard-messages"
+              element={
+             <ShopInbox />
+           }/>
+
+          <Route path="/shop/:id" element={<ShopHomePage />}/>
+          <Route
+          path="/dashboard-orders"
+          element={
+           
+              <ShopAllOrders />
+            
+          }
+        />
+           <Route
+          path="/order/:id"
+          element={
+              <ShopOrderDetails />
+            
+          }
+        />
+        <Route
+          path="/dashboard-refunds"
+          element={
+        
+              <ShopRefunds />
+            
+          }
+        />
+
           
+        </Routes>
+     
+
+
         </SellerProvider>
   
     }
   />
-    {/* <Route path="/shop/:id" element={<ShopHomePage />}/> */}
+    
   
 
 
@@ -107,30 +246,10 @@ function App() {
         
      
         {/*
-        <Route
-          path="/dashboard-orders"
-          element={
-           
-              <ShopAllOrders />
-            
-          }
-        />
-        <Route
-          path="/dashboard-refunds"
-          element={
-        
-              <ShopAllRefunds />
-            
-          }
-        />
+     
+      
 
-        <Route
-          path="/order/:id"
-          element={
-              <ShopOrderDetails />
-            
-          }
-        />
+     
  
 
         <Route
@@ -149,13 +268,7 @@ function App() {
             
           }
         />
-        <Route
-          path="/dashboard-messages"
-          element={
-            
-              <ShopInboxPage />
-           
-          }
+    
         /> */}
 
       {/* Admin */}

@@ -1,27 +1,19 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-// import { backend_url, server } from "../../server";
 import { AiOutlineCamera } from "react-icons/ai";
 import styles from "../../styles/style";
 import axios from "axios";
-import { loadSeller } from "../../redux/actions/user";
 import { toast } from "react-toastify";
+import { useSeller } from "../../context/SellerContext";
 
 const ShopSettings = () => {
-  const { seller } = useSelector((state) => state.seller);
-  const [avatar, setAvatar] = useState();
-  const [name, setName] = useState(seller && seller.name);
-  const [description, setDescription] = useState(
-    seller && seller.description ? seller.description : ""
-  );
-  const [address, setAddress] = useState(seller && seller.address);
-  const [phoneNumber, setPhoneNumber] = useState(seller && seller.phoneNumber);
-  const [zipCode, setZipcode] = useState(seller && seller.zipCode);
-
-  const dispatch = useDispatch();
-  
-  const server = "http://localhost:5000";
-
+  const { userData } = useSeller();
+  const [avatar, setAvatar] = useState("");
+  const [name, setName] = useState(userData.shop.name || "");
+  const [description, setDescription] = useState(userData.shop.description || "");
+  const [address, setAddress] = useState(userData.shop.address || "");
+  const [phoneNumber, setPhoneNumber] = useState(userData.shop.phoneNumber || "");
+  const [zipCode, setZipcode] = useState(userData.shop.zipCode || "");
+  const server ="http://localhost:5000"
 
   const handleImage = async (e) => {
     const reader = new FileReader();
@@ -38,7 +30,6 @@ const ShopSettings = () => {
             }
           )
           .then((res) => {
-            dispatch(loadSeller());
             toast.success("Avatar updated successfully!");
           })
           .catch((error) => {
@@ -66,21 +57,26 @@ const ShopSettings = () => {
         { withCredentials: true }
       )
       .then((res) => {
-        toast.success("Shop info updated succesfully!");
-        dispatch(loadSeller());
+        toast.success("Shop info updated successfully!");
       })
       .catch((error) => {
-        toast.error(error.response.data.message);
+        if (error.response && error.response.data) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error("An error occurred while updating shop info.");
+        }
       });
+      
   };
+
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center">
       <div className="flex w-full 800px:w-[80%] flex-col justify-center my-5">
         <div className="w-full flex items-center justify-center">
-          <div className="relative">
+        <div className="relative">
             <img
-              src={avatar ? avatar : `${seller.avatar?.url}`}
+              src={avatar || userData.avatar} // Use the uploaded avatar or default one
               alt=""
               className="w-[200px] h-[200px] rounded-full cursor-pointer"
             />
@@ -90,15 +86,18 @@ const ShopSettings = () => {
                 id="image"
                 className="hidden"
                 onChange={handleImage}
+                accept="image/*"
+                capture="environment"
               />
               <label htmlFor="image">
                 <AiOutlineCamera />
               </label>
             </div>
           </div>
+        
         </div>
 
-        {/* shop info */}
+        {/* Shop info form */}
         <form
           aria-aria-required={true}
           className="flex flex-col items-center"
@@ -110,7 +109,7 @@ const ShopSettings = () => {
             </div>
             <input
               type="name"
-              placeholder={`${seller.name}`}
+              placeholder=""
               value={name}
               onChange={(e) => setName(e.target.value)}
               className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
@@ -123,11 +122,7 @@ const ShopSettings = () => {
             </div>
             <input
               type="name"
-              placeholder={`${
-                seller?.description
-                  ? seller.description
-                  : "Enter your shop description"
-              }`}
+              placeholder="Enter your shop description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
@@ -139,7 +134,7 @@ const ShopSettings = () => {
             </div>
             <input
               type="name"
-              placeholder={seller?.address}
+              placeholder=""
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
@@ -153,7 +148,7 @@ const ShopSettings = () => {
             </div>
             <input
               type="number"
-              placeholder={seller?.phoneNumber}
+              placeholder=""
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
@@ -167,7 +162,7 @@ const ShopSettings = () => {
             </div>
             <input
               type="number"
-              placeholder={seller?.zipCode}
+              placeholder=""
               value={zipCode}
               onChange={(e) => setZipcode(e.target.value)}
               className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}

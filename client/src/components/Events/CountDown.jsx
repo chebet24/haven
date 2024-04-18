@@ -5,7 +5,7 @@ import axios from "axios";
 
 const CountDown = ({ data }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-  const server ="http://localhost:5000";
+
 
   useEffect(() => {
     const timer = setTimeout(() => {

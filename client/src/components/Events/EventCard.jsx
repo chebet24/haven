@@ -8,19 +8,21 @@ const EventCard = ({ active, data }) => {
   const [cart, setCart] = useState([]);
 
   const addToCartHandler = (data) => {
-    const isItemExists = cart.find((i) => i._id === data._id);
+    const storedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const isItemExists = storedCartItems.find((item) => item._id === data._id);
     if (isItemExists) {
       toast.error("Item already in cart!");
     } else {
       if (data.stock < 1) {
         toast.error("Product stock limited!");
       } else {
-        const cartData = { ...data, qty: 1 };
-        setCart([...cart, cartData]);
+        const updatedCart = [...storedCartItems, { ...data, qty: 1 }];
+        localStorage.setItem("cartItems", JSON.stringify(updatedCart));
         toast.success("Item added to cart successfully!");
       }
     }
   };
+  
 
   return (
     <div

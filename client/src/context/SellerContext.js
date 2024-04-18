@@ -28,6 +28,7 @@ export const SellerProvider = ({ children }) => {
   const logout = () => {
     setUserData(null);
     localStorage.removeItem('sellerData');
+    window.location.reload(); 
   };
 
   // Provide the user context to the app

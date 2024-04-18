@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AiOutlinePlusCircle } from 'react-icons/ai';
+import { useSeller } from '../../context/SellerContext';
 
 const CreateEvent = () => {
+  const [categories, setCategories] = useState([]);
+  const { userData } = useSeller();
   const [eventData, setEventData] = useState({
     name: '',
     description: '',
-    category: '',
+    categoryId: '',
     start_Date: '',
     Finish_Date: '',
     status: 'Running',
@@ -20,35 +23,81 @@ const CreateEvent = () => {
   const handleChange = (e) => {
     setEventData({ ...eventData, [e.target.name]: e.target.value });
   };
-  const handleImageChange = (e) => {
+
+  const handleImageChange = async (e) => {
     const files = e.target.files;
     const imagesArray = [];
 
     for (let i = 0; i < files.length; i++) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          imagesArray.push(reader.result);
-          if (imagesArray.length === files.length) {
-            setEventData({ ...eventData, images: imagesArray });
-          }
-        }
-      };
-      reader.readAsDataURL(files[i]);
+      const formData = new FormData();
+      formData.append('file', files[i]);
+      formData.append('upload_preset', 'qvemtnw8'); // Replace with your unsigned upload preset
+
+      try {
+        const response = await axios.post(
+          'https://api.cloudinary.com/v1_1/dzt1mxhnb/image/upload',
+          formData
+        );
+        imagesArray.push(response.data.secure_url);
+      } catch (error) {
+        console.error('Error uploading image to Cloudinary:', error);
+      }
     }
+
+    setEventData({ ...eventData, images: imagesArray });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Make a POST request to your backend API to create a new event
-      const response = await axios.post('http://localhost:5000/event/createevent', eventData);
-      console.log(response.data); // Log the created event data
+      if (!userData || !userData.shop || !userData.shop._id) {
+        console.error('Shop data not available.');
+        return;
+      }
+
+      const eventsData = {
+        ...eventData,
+        shopId: userData.shop._id,
+        shop: {
+          name: userData.shop.name,
+          email: userData.shop.email,
+          number: userData.shop.phoneNumber,
+        },
+      };
+
+      const response = await axios.post('http://localhost:5000/event/createevent', eventsData);
+
+      console.log('Event saved successfully:', response.data);
+
+      setEventData({
+        name: '',
+        description: '',
+        tags: '',
+        categoryId: '',
+        originalPrice: 0,
+        discountPrice: 0,
+        stock: 0,
+        images: [],
+      });
     } catch (error) {
       console.error('Error creating event:', error);
     }
   };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/category/all');
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Error fetching categories:', error.message);
+    }
+  };
+
 
   return (
     <div className="w-[90%] 800px:w-[50%] bg-white shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll">
@@ -87,17 +136,20 @@ const CreateEvent = () => {
         </div>
 
         <div>
-          <label className="mb-4">
+        <label className="pb-2">
             Category <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
-            name="category"
-            value={eventData.category}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          <select
+            name="categoryId"
+            value={eventData.categoryId}
             onChange={handleChange}
-            placeholder="Enter your Category..."
-          />
+            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+            <option value="" disabled>Select a category</option>
+            {categories.map(category => (
+              <option key={category._id} value={category._id}>{category.name}</option>
+            ))}
+          </select>
         </div>
 
         <div className="mb-4">

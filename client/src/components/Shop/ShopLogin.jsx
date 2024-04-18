@@ -45,7 +45,7 @@ const ShopLogin = () => {
       toast.success("Login Success!");
 
       // Save seller information to localStorage
-      const sellerDataToStore = { isSeller, shop, email };
+      const sellerDataToStore = { isSeller, shop, email,token };
       localStorage.setItem("sellerData", JSON.stringify(sellerDataToStore));
 
       console.log("Navigating to /shop/dashboard");

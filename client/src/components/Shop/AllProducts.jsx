@@ -12,30 +12,40 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useSeller } from "../../context/SellerContext";
 
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
+  const { userData ,isLoading} = useSeller();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/product/all`); // Replace with your API endpoint
+        const shopId = userData?.shop?._id ;
+        console.log(shopId)
+        if (!shopId) {
+          console.log('shop not there');
+          // Handle the case when shopId is not available
+          return;
+        }
+      
+        const response = await axios.get(`http://localhost:5000/product/shop/${shopId}`); // Replace with your API endpoint
         setProducts(response.data);
-        setIsLoading(false);
+        // setIsLoading(false);
       } catch (error) {
         console.error("Error fetching products:", error);
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     };
 
     fetchProducts();
-  },[]);
+  },[ userData]);
   //  [seller._id]
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/product/${id}`); // Replace with your API endpoint
+      await axios.delete(`http://localhost:5000/product/delete/${id}`); // Replace with your API endpoint
 
       // Update the product list
       const updatedProducts = products.filter((product) => product._id !== id);
@@ -47,9 +57,12 @@ const AllProducts = () => {
 
   return (
     <>
+
+  
       {isLoading ? (
         <div className="w-full mx-8 pt-1 mt-10 bg-white text-center">
           <CircularProgress size={80} />
+          hello
         </div>
       ) : (
         <div className="w-full mx-8 pt-1 mt-10 bg-white">
@@ -65,7 +78,7 @@ const AllProducts = () => {
                   <TableRow key={item._id}>
                     <TableCell>{item._id}</TableCell>
                     <TableCell>{item.name}</TableCell>
-                    <TableCell>{`US$ ${item.discountPrice}`}</TableCell>
+                    <TableCell>{`KSH ${item.originalPrice}`}</TableCell>
                     <TableCell>{item.stock}</TableCell>
                     <TableCell>{item?.sold_out}</TableCell>
                     <TableCell>
@@ -77,7 +90,7 @@ const AllProducts = () => {
 
                     </TableCell>
                     <TableCell>
-                      <Button onClick={() => handleDelete(item.id)}>
+                      <Button onClick={() => handleDelete(item._id)}>
                         Delete
                       </Button>
                     </TableCell>
@@ -91,5 +104,4 @@ const AllProducts = () => {
     </>
   );
 };
-
 export default AllProducts;

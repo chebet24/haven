@@ -15,7 +15,7 @@ const ShopProducts = () => {
               <DashboardSideBar active={3} />
             </div>
             <div className="w-full justify-center flex">
-                <AllProducts />
+                <AllProducts  />
             </div>
           </div>
     </div>

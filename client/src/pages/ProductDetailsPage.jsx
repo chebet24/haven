@@ -6,6 +6,8 @@ import ProductDetails from "../components/products/ProductDetails";
 // import SuggestedProduct from "../components/products/SuggestedProducts";
 import axios from "axios";
 
+import Seller from "../components/products/Seller";
+
 const ProductDetailsPage = () => {
   const { id } = useParams();
   const [data, setData] = useState(null);
@@ -18,7 +20,7 @@ const ProductDetailsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const endpoint = isEvent ? ` http://localhost:5000/events/${id}` : ` http://localhost:5000/product/${id}`;
+        const endpoint = isEvent ? ` http://localhost:5000/event/${id}` : ` http://localhost:5000/product/single/${id}`;
         const response = await axios.get(endpoint);
         const fetchedData = response.data;
         if (isEvent) {
@@ -26,23 +28,34 @@ const ProductDetailsPage = () => {
         } else {
           setData(fetchedData);
         }
+        console.log("Fetched data:", fetchedData); // Log fetched data here
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, [id, isEvent]);
+  
+  useEffect(() => {
+    console.log("Data after setting:", data);
+  }, [data]);
+  
+  console.log("data",data)
 
   return (
     <div>
-      <Header />
+     <Header/>
       {loading ? (
         <p>Loading...</p>
       ) : (
+      <>
+      <Seller data ={ isEvent ? eventData: data}/>
         <ProductDetails data={isEvent ? eventData : data} />
+        
+        </>
       )}
       {/* {!isEvent && data && <SuggestedProduct data={data} />} */}
      

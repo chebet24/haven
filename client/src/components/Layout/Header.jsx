@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-
 import { Link } from "react-router-dom";
 import styles from "../../styles/style";
-// remove them 
-import { categoriesData, productData } from "../../static/data";
 import {
   AiOutlineHeart,
   AiOutlineSearch,
@@ -17,14 +14,33 @@ import Navbar from "./Navbar";
 import Cart from "../usercnw/Cart";
 import Wishlist from "../usercnw/Wishlist";
 import { MdClose } from "react-icons/md";
+import axios from 'axios';
+import { Avatar } from "@mui/material";
+const CustomAvatar = ({ user }) => {
+  useEffect(() => {
+    console.log("Props in CustomAvatar:", user); // Log the received props
+  }, [user]);
+
+  if (!user) {
+    return <CgProfile size={30} />;
+  }
+
+  if (user.avatar && user.avatar.length > 0) {
+    return <Avatar src={user.avatar} />;
+  } else if (user.name) {
+    const firstLetter = user.name.charAt(0).toUpperCase();
+    return <Avatar style={{ backgroundColor: 'green' }}>{firstLetter}</Avatar>;
+  } else {
+    // Return a fallback component in case user data is incomplete
+    return <CgProfile size={30} />;
+  }
+};
+
+
 
 const Header = ({ activeHeading }) => {
-  const [wishlist, setWishlist] = useState(
-    JSON.parse(localStorage.getItem("wishlistItems")) || []
-  );
-  const [cart, setCart] = useState(
-    JSON.parse(localStorage.getItem("cartItems")) || []
-  );
+  const [wishlist, setWishlist] = useState([]);
+  const [cart, setCart] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
   const [active, setActive] = useState(false);
@@ -32,77 +48,100 @@ const Header = ({ activeHeading }) => {
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishlist] = useState(false);
   const [open, setOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); 
-  const [user, setUser] = useState(null); 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [allProducts, setAllProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-  const handleSearchChange = (e) => {
-//     const term = e.target.value;
-//     setSearchTerm(term);
 
-//     const filteredProducts =
-//       allProducts &&
-//       allProducts.filter((product) =>
-//         product.name.toLowerCase().includes(term.toLowerCase())
-//       );
-//     setSearchData(filteredProducts);
-//   };
 
-//   window.addEventListener("scroll", () => {
-//     if (window.scrollY > 70) {
-//       setActive(true);
-//     } else {
-//       setActive(false);
-//     }
-  };
-
-  const removeFromWishlistHandler = (itemId) => {
-    const updatedWishlist = wishlist.filter((item) => item._id !== itemId);
-    setWishlist(updatedWishlist);
-    localStorage.setItem("wishlistItems", JSON.stringify(updatedWishlist));
-  };
-
-  const addToCartHandler = (item) => {
-    const newItem = { ...item, qty: 1 };
-    const updatedCart = [...cart, newItem];
-    setCart(updatedCart);
-    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
-
-    // Optional: If you want to remove the item from the wishlist after adding to the cart
-    removeFromWishlistHandler(item._id);
-
-    setOpenCart(false);
-  };
 
   
+
   useEffect(() => {
-    const storedAccessToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/category/all');
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
 
-    if (storedAccessToken && storedUser) {
-      const accessToken = storedAccessToken;
-      const parsedUser = JSON.parse(storedUser);
+    fetchCategories();
+  }, []);
 
-      setIsAuthenticated(true);
-      setUser(parsedUser);
-    }
-  }, []);  // Empty dependency array ensures this effect runs only once, similar to componentDidMount
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          // Send a request to your backend server to verify the token
+          const response = await axios.get('http://localhost:5000/user/info', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          setUser(response.data.user);
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error('Error verifying token:', error);
+        setIsAuthenticated(false);
+      }
+    };
 
-  const logout = () => {
-    localStorage.removeItem('accessToken');
-    setIsAuthenticated(false);
-    setUser(null);
-  };
+    checkAuthStatus();
+  }, []);
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/product/all");
+        setAllProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchAllProducts();
+  }, []);
+
+    const handleSearchChange = (e) => {
+          const term = e.target.value;
+          setSearchTerm(term);
+      
+          const filteredProducts =
+            allProducts &&
+            allProducts.filter((product) =>
+              product.name.toLowerCase().includes(term.toLowerCase())
+            );
+          setSearchData(filteredProducts);
+        };
+      
+        window.addEventListener("scroll", () => {
+          if (window.scrollY > 70) {
+            setActive(true);
+          } else {
+            setActive(false);
+          }
+        });
+        console.log("User:", user);
+        console.log(user && user.name);
+  
 
 
   return (
     <>
-      <div className={`${styles.section}`}>
-        <div className="hidden 800px:-[50px] 800px:my-[20px] 800px:flex items-center justify-between background-color:red">
+      <div className={`${styles.section}  `}>
+        <div className="hidden 800px:-[50px] 800px:my-[20px] 800px:flex items-center justify-between background-color:green">
           <div>
             <Link to="/">
               <img
-                src=""
+                src="/1-removebg-preview.png"
                 alt="logo"
+                className="w-20 h-20 cursor-pointer"
               />
             </Link>
           </div>
@@ -127,7 +166,7 @@ const Header = ({ activeHeading }) => {
                       <Link to={`/product/${i._id}`}>
                         <div className="w-full flex items-start-py-3">
                           <img
-                            src={`${i.images[0]?.url}`}
+                            src={`${i.images[0]}`}
                             alt=""
                             className="w-[40px] h-[40px] mr-[10px]"
                           />
@@ -139,15 +178,23 @@ const Header = ({ activeHeading }) => {
               </div>
             ) : null}
           </div>
-
-          {/* <div className={`${styles.button}`}>
-            <Link to={`${isSeller ? "/dashboard" : "/createshop"}`}>
-              <h1 className="text-[#fff] flex items-center">
-                {isSeller ? "Go Dashboard" : "Become Seller"}{" "}
-                <IoIosArrowForward className="ml-1" />
-              </h1>
-            </Link>
-          </div> */}
+          {/* Profile section */}
+          <div className="flex items-center">
+            {isAuthenticated ? (
+              <div className="flex items-center ml-4">
+               <Link to="/profile">
+               <CustomAvatar user ={user}  />
+               </Link>
+                <span className="text-black ml-2">Welcome {user.name}</span>
+              </div>
+            ) : (
+              <div className="ml-4">
+                <span className="text-white">
+                  <Link to="/login">Login</Link> / <Link to="/sign-up">Sign up</Link>
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <div
@@ -155,8 +202,7 @@ const Header = ({ activeHeading }) => {
           active === true ? "shadow-sm fixed top-0 left-0 z-10" : null
         } transition hidden 800px:flex items-center justify-between w-full bg-[#3321c8] h-[70px]`}
       >
-        <div  className={`${styles.section} relative ${styles.noramlFlex} justify-between`}
->
+        <div className={`${styles.section} relative ${styles.noramlFlex} justify-between`}>
           {/* categories */}
           <div onClick={() => setDropDown(!dropDown)}>
             <div className="relative h-[60px] mt-[10px] w-[270px] hidden 1000px:block">
@@ -173,7 +219,7 @@ const Header = ({ activeHeading }) => {
               />
               {dropDown ? (
                 <DropDown
-                  categoriesData={categoriesData}
+                  categoriesData={categories}
                   setDropDown={setDropDown}
                 />
               ) : null}
@@ -183,7 +229,6 @@ const Header = ({ activeHeading }) => {
           <div className={`${styles.noramlFlex}`}>
             <Navbar active={activeHeading} />
           </div>
-
           <div className="flex">
             <div className={`${styles.noramlFlex}`}>
               <div
@@ -196,8 +241,8 @@ const Header = ({ activeHeading }) => {
                 </span>
               </div>
             </div>
-
             <div className={`${styles.noramlFlex}`}>
+              
               <div
                 className="relative cursor-pointer mr-[15px]"
                 onClick={() => setOpenCart(true)}
@@ -207,46 +252,27 @@ const Header = ({ activeHeading }) => {
                   color="rgb(255 255 255 / 83%)"
                 />
                 <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                  {cart && cart.length}
+                  {cart.length}
                 </span>
               </div>
+              
             </div>
-
-            <div className={`${styles.noramlFlex}`}>
-              <div className="relative cursor-pointer mr-[15px]">
-                {isAuthenticated ? (
-                  <Link to="/profile">
-                    <img
-                      src={`${user?.avatar?.url}`}
-                      className="w-[35px] h-[35px] rounded-full"
-                      alt=""
-                    />
-                  </Link>
-                ) : (
-                  <Link to="/login">
-                    <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
-                  </Link>
-                )}
-              </div>
-            </div>
-
             {/* cart popup */}
             {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
-
             {/* wishlist popup */}
             {openWishlist ? (
               <Wishlist setOpenWishlist={setOpenWishlist} />
             ) : null}
+           
           </div>
         </div>
       </div>
-
       {/* mobile header */}
       <div
+      
         className={`${
           active === true ? "shadow-sm fixed top-0 left-0 z-10" : null
-        }
-      w-full h-[60px] bg-[#fff] z-50 top-0 left-0 shadow-sm 800px:hidden`}
+        } w-full h-[60px] bg-[#fff] z-50 top-0 left-0 shadow-sm 800px:hidden`}
       >
         <div className="w-full flex items-center justify-between">
           <div>
@@ -259,9 +285,9 @@ const Header = ({ activeHeading }) => {
           <div>
             <Link to="/">
               <img
-                src=""
+                src="/1-removebg-preview.png"
                 alt=""
-                className="mt-3 cursor-pointer"
+                className="mt-3 cursor-pointer "
               />
             </Link>
           </div>
@@ -272,17 +298,15 @@ const Header = ({ activeHeading }) => {
             >
               <AiOutlineShoppingCart size={30} />
               <span class="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
-                {cart && cart.length}
+                {cart.length}
               </span>
             </div>
           </div>
           {/* cart popup */}
           {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
-
           {/* wishlist popup */}
           {openWishlist ? <Wishlist setOpenWishlist={setOpenWishlist} /> : null}
         </div>
-
         {/* header sidebar */}
         {open && (
           <div
@@ -302,12 +326,11 @@ const Header = ({ activeHeading }) => {
                   </div>
                 </div>
                 <MdClose
-                size={30}
-                className="ml-4 mt-5"
-                onClick={() => setOpen(false)}
+                  size={30}
+                  className="ml-4 mt-5"
+                  onClick={() => setOpen(false)}
                 />
               </div>
-
               <div className="my-8 w-[92%] m-auto h-[40px relative]">
                 <input
                   type="search"
@@ -320,13 +343,12 @@ const Header = ({ activeHeading }) => {
                   <div className="absolute bg-[#fff] z-10 shadow w-full left-0 p-3">
                     {searchData.map((i) => {
                       const d = i.name;
-
                       const Product_name = d.replace(/\s+/g, "-");
                       return (
                         <Link to={`/product/${Product_name}`}>
                           <div className="flex items-center">
                             <img
-                              src={i.image_Url[0]?.url}
+                              src={i.image_Url[0]}
                               alt=""
                               className="w-[50px] mr-2"
                             />
@@ -338,7 +360,6 @@ const Header = ({ activeHeading }) => {
                   </div>
                 )}
               </div>
-
               <Navbar active={activeHeading} />
               <div className={`${styles.button} ml-4 !rounded-[4px]`}>
                 {/* <Link to="/createshop">
@@ -350,32 +371,20 @@ const Header = ({ activeHeading }) => {
               <br />
               <br />
               <br />
-
               <div className="flex w-full justify-center">
                 {isAuthenticated ? (
                   <div>
                     <Link to="/profile">
-                      <img
-                        src={`${user.avatar}`}
-                        alt="${user.name}"
-                        className="w-[60px] h-[60px] rounded-full border-[3px] border-[#0eae88]"
-                      />
+                    <CustomAvatar user ={user}  />
                     </Link>
+                    <span className="text-black ml-2">Welcome hi {user.name}</span>
+ 
                   </div>
                 ) : (
                   <>
-                    <Link
-                      to="/login"
-                      className="text-[18px] pr-[10px] text-[#000000b7]"
-                    >
-                      Login /
-                    </Link>
-                    <Link
-                      to="/sign-up"
-                      className="text-[18px] text-[#000000b7]"
-                    >
-                      Sign up
-                    </Link>
+                    <span className="text-[18px] pr-[10px] text-[#000000b7]">
+                      <Link to="/login">Login</Link> / <Link to="/sign-up">Sign up</Link>
+                    </span>
                   </>
                 )}
               </div>

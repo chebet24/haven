@@ -1,69 +1,126 @@
-import React, { useEffect } from "react";
-import { Button, Table } from "antd";
-// import "antd/dist/antd.css";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Loader from "../Layout/Loader";
-import { getAllOrdersOfShop } from "../../redux/actions/order";
 import { AiOutlineArrowRight } from "react-icons/ai";
+import { useSeller } from "../../context/SellerContext";
+import axios from "axios";
+import { Button, CircularProgress } from "@mui/material";
+import { useTable } from "react-table";
 
 const AllOrders = () => {
-  const { orders, isLoading } = useSelector((state) => state.order);
-  const { seller } = useSelector((state) => state.seller);
-
-  const dispatch = useDispatch();
+  const [orders, setOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { userData } = useSeller();
 
   useEffect(() => {
-    dispatch(getAllOrdersOfShop(seller._id));
-  }, [dispatch]);
+    const fetchOrders = async () => {
+      try {
+        setIsLoading(true);
+        if (userData && userData.shop && userData.shop._id) {
+          const response = await axios.get(`http://localhost:5000/order/get-seller-all-orders/${userData.shop._id}`);
+          console.log("Orders:", response.data.orders); 
+          setOrders(response.data.orders);
+        } else {
+          console.error("Shop ID is undefined");
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const columns = [
-    { dataIndex: "id", title: "Order ID", width: 150, ellipsis: true },
-    {
-      dataIndex: "status",
-      title: "Status",
-      width: 130,
-      render: (_, record) => (
-        <span className={record.status === "Delivered" ? "greenColor" : "redColor"}>
-          {record.status}
-        </span>
-      ),
-    },
-    { dataIndex: "itemsQty", title: "Items Qty", width: 130 },
-    { dataIndex: "total", title: "Total", width: 130 },
-    {
-      title: "",
-      width: 150,
-      render: (_, record) => (
-        <Link to={`/order/${record.id}`}>
-          <Button>
-            <AiOutlineArrowRight size={20} />
-          </Button>
-        </Link>
-      ),
-    },
-  ];
+    if (userData) {
+      fetchOrders();
+    }
+  }, [userData]); // Update the dependency array
 
-  const dataSource = orders.map((item) => ({
-    id: item._id,
-    itemsQty: item.cart.length,
-    total: "US$ " + item.totalPrice,
-    status: item.status,
-  }));
+  const columns = React.useMemo(
+    () => [
+      { Header: "Order ID", accessor: "id" },
+      {
+        Header: "Status",
+        accessor: "status",
+        Cell: ({ value }) => (
+          <span className={value === "Delivered" ? "greenColor" : "redColor"}>
+            {value}
+          </span>
+        ),
+      },
+      { Header: "Total", accessor: "total" },
+      {
+        Header: "",
+        accessor: "link",
+        Cell: ({ row }) => (
+          <Link to={`/shop/order/${row.original.id}`}>
+            <Button variant="contained" color="primary">
+              <AiOutlineArrowRight size={20} />
+            </Button>
+          </Link>
+        ),
+      },
+    ],
+    []
+  );
+  
+
+  const data = React.useMemo(
+    () =>
+      orders.map((order) => ({
+        id: order._id,
+        status: order.status,
+        total: `KSH: ${order.totalPrice}`,
+      })),
+    [orders]
+  );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = useTable({ columns, data });
 
   return (
     <>
-      {isLoading ? (
-        <Loader />
+      {userData ? (
+        isLoading ? (
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+            <CircularProgress />
+          </div>
+        ) : (
+          <div style={{ width: "100%", margin: "0 8px", paddingTop: "1px", marginTop: "10px", backgroundColor: "white" }}>
+            <table {...getTableProps()} style={{ borderCollapse: "collapse", width: "100%" }}>
+              <thead>
+                {headerGroups.map((headerGroup) => (
+                  <tr {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroup.headers.map((column) => (
+                      <th {...column.getHeaderProps()} style={{ borderBottom: "2px solid black", padding: "8px" }}>
+                        {column.render("Header")}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody {...getTableBodyProps()}>
+                {rows.map((row) => {
+                  prepareRow(row);
+                  return (
+                    <tr {...row.getRowProps()}>
+                      {row.cells.map((cell) => (
+                        <td {...cell.getCellProps()} style={{ borderBottom: "1px solid black", padding: "8px" }}>
+                          {cell.render("Cell")}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )
       ) : (
-        <div className="w-full mx-8 pt-1 mt-10 bg-white">
-          <Table
-            dataSource={dataSource}
-            columns={columns}
-            pagination={{ pageSize: 10 }}
-            scroll={{ x: 'max-content' }}
-          />
-        </div>
+        <div>Loading seller data...</div>
       )}
     </>
   );

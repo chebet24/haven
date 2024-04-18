@@ -1,6 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const Product = require("../models/products");
+const mongoose = require("mongoose");
+const Order = require('../models/orders'); 
 
 // Define the endpoint for creating a new product
 router.post("/create", async (req, res) => {
@@ -23,23 +25,28 @@ router.get("/all", async (req, res) => {
 });
 ;
 
-// Get all products by shop name
-router.get("/shop/:shop", async (req, res) => {
+// Get all products by shop id
+router.get("/shop/:shopId", async (req, res) => {
   try {
-    const shop = req.params.shop;
+    const shopId = req.params.shopId;
+    console.log('Received shopId:', shopId);
 
-    // Find all products with the specified shop name
-    const products = await Product.find({ shop });
+    // Find all products with the specified shop ID
+    const products = await Product.find({ shopId: shopId });
+    console.log('Found products:', products);
+
 
     if (!products || products.length === 0) {
-      return res.status(404).json({ message: "No products found for the given shop name" });
+      return res.status(404).json({ message: "No products found for the given shop ID" });
     }
 
     res.json(products);
   } catch (error) {
+    console.error('Error:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
+
 
 //get by category
 router.get("/category/:category", async (req, res) => {
@@ -60,8 +67,9 @@ router.get("/category/:category", async (req, res) => {
 });
 
 // Define the endpoint for getting a specific product by ID
-router.get("single/:productId", async (req, res) => {
+router.get("/single/:productId", async (req, res) => {
   try {
+    console.log('Product ID:', req.params.productId);
     const product = await Product.findById(req.params.productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -90,9 +98,11 @@ router.put("update/:productId", async (req, res) => {
 });
 
 // Define the endpoint for deleting a specific product by ID
-router.delete("delete/:productId", async (req, res) => {
+router.delete("/delete/:productId", async (req, res) => {
   try {
-    const deletedProduct = await Product.findByIdAndDelete(req.params.productId);
+    const productId = req.params.productId; // Extract productId from params
+     // Log the productId
+    const deletedProduct = await Product.findByIdAndDelete(productId);
     if (!deletedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -101,5 +111,73 @@ router.delete("delete/:productId", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+router.put("/create-new-review", async (req, res, next) => {
+  try {
+    const { user, rating, comment, productId, orderId } = req.body;
+    console.log("req user",req.body.user)
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    const review = {
+      user,
+      rating,
+      comment,
+      productId,
+    };
+
+    console.log("Product reviews:", product.reviews);
+    const isReviewed = product.reviews.find((rev) => {
+      console.log("Review user:", rev.user);
+      return rev.user._id === req.body.user._id;
+    });
+    
+    if (isReviewed) {
+      product.reviews.forEach((rev) => {
+        if (rev.user._id === req.body.user._id) {
+          rev.rating = rating;
+          rev.comment = comment;
+          rev.user = user;
+        }
+      });
+    } else {
+      product.reviews.push(review);
+    }
+
+    let avg = 0;
+
+    product.reviews.forEach((rev) => {
+      avg += rev.rating;
+    });
+
+    product.ratings = avg / product.reviews.length;
+
+    await product.save({ validateBeforeSave: false });
+
+    await Order.findByIdAndUpdate(
+      orderId,
+      { $set: { "cart.$[elem].isReviewed": true } },
+      { arrayFilters: [{ "elem._id": productId }], new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Reviewed successfully!",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+
 
 module.exports = router

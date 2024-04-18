@@ -36,10 +36,6 @@ const shopSchema = new mongoose.Schema({
     type: [String], // Assuming storing image URLs
     required: true,
   },
-  zipCode: {
-    type: Number,
-    required: true,
-  },
   withdrawMethod: {
     type: Object,
   },

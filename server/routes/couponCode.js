@@ -2,9 +2,11 @@ const express = require("express");
 const router = express.Router();
 const CoupounCode = require("../models/couponCode");
 
+
 // Create a new coupon code
 router.post("/create", async (req, res) => {
   try {
+    console.log(req.body);
     const couponData = req.body;
 
     // Ensure shopId is present in the request body
@@ -25,6 +27,27 @@ router.get("/allcodes", async (req, res) => {
     const couponCodes = await CoupounCode.find();
     res.json(couponCodes);
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/shop/:shopId", async (req, res) => {
+  try {
+    const shopId = req.params.shopId;
+    console.log('Received shopId:', shopId);
+
+    // Find all couponCodes with the specified shop ID
+    const couponCodes = await CoupounCode.find({ shopId: shopId });
+    console.log('Found products:', couponCodes);
+
+
+    if (!couponCodes || couponCodes.length === 0) {
+      return res.status(404).json({ message: "No couponCodes found for the given shop ID" });
+    }
+
+    res.json(couponCodes);
+  } catch (error) {
+    console.error('Error:', error.message);
     res.status(500).json({ error: error.message });
   }
 });

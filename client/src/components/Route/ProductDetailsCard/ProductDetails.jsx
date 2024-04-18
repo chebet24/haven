@@ -1,4 +1,3 @@
-// ProductDetailsCard.js
 import React, { useEffect, useState } from "react";
 import {
   AiFillHeart,
@@ -16,6 +15,22 @@ const ProductDetailsCard = ({ setOpen, data, wishlist, setWishlist }) => {
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [cart, setCart] = useState([]);
+  const [shopInfo, setShopInfo] = useState(null);
+
+  useEffect(() => {
+    const fetchShopInfo = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/shop/get/${data.shopId}`);
+          setShopInfo(response.data);
+          console.log("Shop Info:", response.data); 
+       
+      } catch (error) {
+        console.error("Error fetching shop info:", error);
+      }
+    };
+
+    fetchShopInfo();
+  }, [data]);
 
   useEffect(() => {
     const isItemInWishlist = wishlist && wishlist.find((i) => i._id === data._id);
@@ -29,52 +44,28 @@ const ProductDetailsCard = ({ setOpen, data, wishlist, setWishlist }) => {
 
   const addToWishlistHandler = () => {
     setClick(true);
-    // shop: { name: data.shop.name, _id: data.shop._id\
-  
-    // Omit circular references before saving to local storage
-    const dataToSave = { ...data  } ;
-  
+    const dataToSave = { ...data };
     const updatedWishlist = [...wishlist, dataToSave];
     setWishlist(updatedWishlist);
-  
-    // Use JSON.stringify with a replacer function to handle circular references
-    localStorage.setItem("wishlistItems", JSON.stringify(updatedWishlist, replacer));
+    localStorage.setItem("wishlistItems", JSON.stringify(updatedWishlist));
     toast.success("Item added to wishlist successfully!");
   };
-  
-  const addToCartHandler = (id) => {
-    const isItemExists = cart && cart.find((i) => i._id === id);
+
+  const addToCartHandler = () => {
+    const isItemExists = cart && cart.find((i) => i._id === data._id);
     if (isItemExists) {
       toast.error("Item already in cart!");
     } else {
       if (data.stock < count) {
         toast.error("Product stock limited!");
       } else {
-        // , shop: { name: data.shop.name, _id: data.shop._id }
-        // Omit circular references before saving to local storage
-        const dataToSave = { ...data,
-          window: undefined,  // Omit 'window' property
-          self: undefined };
-  
+        const dataToSave = { ...data };
         const cartData = { ...dataToSave, qty: count };
         setCart((prevCart) => [...prevCart, cartData]);
-        
-        // Use JSON.stringify with a replacer function to handle circular references
-        localStorage.setItem("cartItems", JSON.stringify([...cart, cartData], replacer));
+        localStorage.setItem("cartItems", JSON.stringify([...cart, cartData]));
         toast.success("Item added to cart successfully!");
       }
     }
-  };
-  
-  // replacer function to handle circular references
-  const replacer = (key, value) => {
-    if (key === 'window' || key === 'stateNode' || key === '__reactFiber$ulba6t54hzf') {
-      return undefined;
-    }
-    return value;
-  };
-  const handleMessageSubmit = () => {
-    // Implement your message submission logic here
   };
 
   const decrementCount = () => {
@@ -87,9 +78,12 @@ const ProductDetailsCard = ({ setOpen, data, wishlist, setWishlist }) => {
     setCount(count + 1);
   };
 
+  const handleMessageSubmit = () => {
+    // Implement your message submission logic here
+  };
 
   return (
-     <div className="bg-[#fff]">
+    <div className="bg-[#fff]">
       {data ? (
         <div className="fixed w-full h-screen top-0 left-0 bg-[#00000030] z-40 flex items-center justify-center">
           <div className="w-[90%] 800px:w-[60%] h-[90vh] overflow-y-scroll 800px:h-[75vh] bg-white rounded-md shadow-sm relative p-4">
@@ -103,32 +97,21 @@ const ProductDetailsCard = ({ setOpen, data, wishlist, setWishlist }) => {
               <div className="w-full 800px:w-[50%]">
                 <img src={`${data.images && data.images[0]}`} alt="" />
                 <div className="flex">
-                {/* `/shop/preview/${data.shop._id}` */}
-                  <Link to={``} className="flex">
+                <Link to={`/shop/preview/${data.shopId}`} className="flex">
                     <img
-                      src={`${data.images && data.images[0]}`}
+                      src={`${shopInfo?.shop?.avatar}`}
                       alt=""
                       className="w-[50px] h-[50px] rounded-full mr-2"
                     />
                     <div>
-                      {/* <h3 className={`${styles.shop_name}`}>
-                        {data.shop.name}
-                      </h3> */}
+                      <h3 className={`${styles.shop_name}`}>{shopInfo?.name}</h3> {/* Updated shop name */}
                       <h5 className="pb-3 text-[15px]">{data?.ratings} Ratings</h5>
                     </div>
                   </Link>
                 </div>
-                <div
-                  className={`${styles.button} bg-[#000] mt-4 rounded-[4px] h-11`}
-                  onClick={handleMessageSubmit}
-                >
-                  <span className="text-[#fff] flex items-center">
-                    Send Message <AiOutlineMessage className="ml-1" />
-                  </span>
-                </div>
-                <h5 className="text-[16px] text-[red] mt-5">(50) Sold out</h5>
+               
+                <h5 className="text-[16px] text-[red] mt-5">{data.sold_out} Sold out</h5>
               </div>
-
               <div className="w-full 800px:w-[50%] pt-5 pl-[5px] pr-[5px]">
                 <h1 className={`${styles.productTitle} text-[20px]`}>
                   {data.name}
@@ -166,7 +149,7 @@ const ProductDetailsCard = ({ setOpen, data, wishlist, setWishlist }) => {
                       <AiFillHeart
                         size={30}
                         className="cursor-pointer"
-                        onClick={() => removeFromWishlistHandler(data)}
+                        onClick={removeFromWishlistHandler}
                         color={click ? "red" : "#333"}
                         title="Remove from wishlist"
                       />
@@ -174,7 +157,7 @@ const ProductDetailsCard = ({ setOpen, data, wishlist, setWishlist }) => {
                       <AiOutlineHeart
                         size={30}
                         className="cursor-pointer"
-                        onClick={() => addToWishlistHandler(data)}
+                        onClick={addToWishlistHandler}
                         title="Add to wishlist"
                       />
                     )}
@@ -182,7 +165,7 @@ const ProductDetailsCard = ({ setOpen, data, wishlist, setWishlist }) => {
                 </div>
                 <div
                   className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center`}
-                  onClick={() => addToCartHandler(data._id)}
+                  onClick={addToCartHandler}
                 >
                   <span className="text-[#fff] flex items-center">
                     Add to cart <AiOutlineShoppingCart className="ml-1" />
@@ -196,10 +179,8 @@ const ProductDetailsCard = ({ setOpen, data, wishlist, setWishlist }) => {
     </div>
   );
 };
-      
-
-
-
-
 
 export default ProductDetailsCard;
+
+
+             

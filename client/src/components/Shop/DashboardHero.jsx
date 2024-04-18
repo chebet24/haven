@@ -11,30 +11,30 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import { useSeller } from "../../context/SellerContext";
 
 const DashboardHero = () => {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
-  const [seller, setSeller] = useState(null);
+  const { userData } = useSeller();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // Fetch seller information
-        const sellerResponse = await fetch("http://localhost:5000/seller"); // Replace with your seller API endpoint
-        const sellerData = await sellerResponse.json();
-        setSeller(sellerData);
+        console.log("USER",userData)
+        const shopId = userData.shop._id;
 
-        // Fetch orders
-        const ordersResponse = await fetch(`http://localhost:5000/orders/${sellerData._id}`); // Replace with your orders API endpoint
-        const ordersData = await ordersResponse.json();
-        setOrders(ordersData);
 
+        // const ordersResponse = await fetch(`http://localhost:5000/orders/${shopId}`);
+        // const ordersData = await ordersResponse.json();
+        // setOrders(ordersData);
+     
         // Fetch products
-        const productsResponse = await fetch(`http://localhost:5000/products/${sellerData._id}`); // Replace with your products API endpoint
+        const productsResponse = await fetch(`http://localhost:5000/product/shop/${shopId}`);
         const productsData = await productsResponse.json();
         setProducts(productsData);
+        console.log(productsData);
       } catch (error) {
         console.error("Error during fetch:", error);
       } finally {
@@ -42,17 +42,18 @@ const DashboardHero = () => {
       }
     };
 
+
     fetchDashboardData();
   }, []);
 
-  const availableBalance = seller?.availableBalance.toFixed(2);
+  const availableBalance = userData?.availableBalance !== undefined? userData.availableBalance.toFixed(2)  : 0;
 
-  const orderRows = orders?.map((item) => ({
-    id: item._id,
-    itemsQty: item.cart.reduce((acc, item) => acc + item.qty, 0),
-    total: "US$ " + item.totalPrice,
-    status: item.status,
-  }));
+  // const orderRows = orders?.map((item) => ({
+  //   id: item._id,
+  //   itemsQty: item.cart.reduce((acc, item) => acc + item.qty, 0),
+  //   total: "KSH " + item.totalPrice,
+  //   status: item.status,
+  // }));
 
   return (
     <div className="w-full p-8">
@@ -65,13 +66,13 @@ const DashboardHero = () => {
               Account Balance <span className="text-[16px]">(with 10% service charge)</span>
             </h3>
           </div>
-          <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">${availableBalance}</h5>
+          <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">KSH  {availableBalance}</h5>
           <Link to="/dashboard-withdraw-money">
             <h5 className="pt-4 pl-[2] text-[#077f9c]">Withdraw Money</h5>
           </Link>
         </div>
 
-        <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
+        {/* <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
           <div className="flex items-center">
             <MdBorderClear size={30} className="mr-2" fill="#00000085" />
             <h3 className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}>
@@ -82,7 +83,7 @@ const DashboardHero = () => {
           <Link to="/dashboard-orders">
             <h5 className="pt-4 pl-2 text-[#077f9c]">View Orders</h5>
           </Link>
-        </div>
+        </div> */}
 
         <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
           <div className="flex items-center">
@@ -92,14 +93,14 @@ const DashboardHero = () => {
             </h3>
           </div>
           <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">{products && products.length}</h5>
-          <Link to="/dashboard-products">
+          <Link to="/shop/dashboard-products">
             <h5 className="pt-4 pl-2 text-[#077f9c]">View Products</h5>
           </Link>
         </div>
       </div>
       <br />
       <h3 className="text-[22px] font-Poppins pb-2">Latest Orders</h3>
-      <div className="w-full min-h-[45vh] bg-white rounded">
+      {/* <div className="w-full min-h-[45vh] bg-white rounded">
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -130,7 +131,7 @@ const DashboardHero = () => {
             </TableBody>
           </Table>
         </TableContainer>
-      </div>
+      </div> */}
     </div>
   );
 };

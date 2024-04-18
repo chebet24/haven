@@ -8,7 +8,7 @@ const coupounCodeSchema = new mongoose.Schema({
     },
     value:{
         type: Number,
-        required: true,
+        required: [true,"Please enter your coupon value!"],
     },
     minAmount:{
         type: Number,
@@ -20,7 +20,7 @@ const coupounCodeSchema = new mongoose.Schema({
      type: String,
      required: true,
     },
-    selectedProduct:{
+    selectedProducts:{
      type: String,
     },
     createdAt:{

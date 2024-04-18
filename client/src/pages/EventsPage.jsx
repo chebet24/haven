@@ -29,9 +29,15 @@ const EventsPage = () => {
         <CircularProgress />
       ) : (
         <div>
-          <Header activeHeading={4} />
-          {allEvents.length > 0 && (
-            <EventCard active={true} data={allEvents[0]} />
+          {allEvents.length !== 0 ? (
+            <>
+              <Header activeHeading={4} />
+              {allEvents.map(event => (
+                <EventCard key={event.id} data={event} />
+              ))}
+            </>
+          ) : (
+            <h4>No Events have!</h4>
           )}
         </div>
       )}

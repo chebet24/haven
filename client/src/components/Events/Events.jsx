@@ -32,7 +32,9 @@ const Events = () => {
 
           <div className="w-full grid">
             {allEvents.length !== 0 ? (
-              <EventCard data={allEvents && allEvents[0]} />
+              allEvents.map(event => (
+                <EventCard key={event.id} data={event} />
+              ))
             ) : (
               <h4>No Events have!</h4>
             )}

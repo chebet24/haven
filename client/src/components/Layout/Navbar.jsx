@@ -29,18 +29,21 @@ const Navbar = ({ active }) => {
   return (
     <div className={`block 800px:${styles.noramlFlex}`}>
       {navItems &&
-        navItems.map((item, index) => (
-          <div className="flex" key={index}>
-            <Link
-              to={item.url}
-              className={`${
-                active === index + 1 ? "text-[#17dd1f]" : "text-black 800px:text-[#fff]"
-              } pb-[30px] 800px:pb-0 font-[500] px-6 cursor-pointer`}
-            >
-              {item.title}
-            </Link>
-          </div>
-        ))}
+        navItems.map((item, index) => {
+          console.log("active:", active, "index:", index); // Log the active prop and index
+          return (
+            <div className="flex" key={index}>
+              <Link
+                to={item.url}
+                className={`${
+                  active === index + 1 ? "text-[#17dd1f]" : "text-black 800px:text-[#fff]"
+                } pb-[30px] 800px:pb-0 font-[500] px-6 cursor-pointer`}
+              >
+                {item.title}
+              </Link>
+            </div>
+          );
+        })}
     </div>
   );
 };

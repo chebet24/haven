@@ -1,12 +1,15 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { AiOutlineAim } from "react-icons/ai";
 import styles from "../../styles/style";
+
+// Import ChildIcon from Material-UI Icons
 
 const DropDown = ({ categoriesData, setDropDown }) => {
   const navigate = useNavigate();
 
   const submitHandle = (category) => {
-    navigate(`/products?category=${category.title}`);
+    navigate(`/products?category=${category.name}`);
     setDropDown(false);
     window.location.reload();
   };
@@ -20,22 +23,15 @@ const DropDown = ({ categoriesData, setDropDown }) => {
             className={`${styles.noramlFlex}`}
             onClick={() => submitHandle(category)}
           >
-            <img
-              src={category.image_Url}
-              style={{
-                width: "25px",
-                height: "25px",
-                objectFit: "contain",
-                marginLeft: "10px",
-                userSelect: "none",
-              }}
-              alt=""
-            />
+            {category.name === "Women" && <img src="/women-icons-88893.png" alt="Women" style={{ width: 25, height: 25 }} />}
+            {category.name === "Men" && <img src="download.png" alt="Men" style={{ width: 25, height: 25 }} />}
+            {category.name === "Kids" && "👶"}        
+            {category.name === "Unisex" && <AiOutlineAim size={25} />}
             <Link
-              to={`/products?category=${category.title}`}
+              to={`/products?category=${category.name}`}
               className="m-3 cursor-pointer select-none"
             >
-              {category.title}
+              {category.name}
             </Link>
           </div>
         ))}

@@ -14,9 +14,9 @@ const ShopDashboardPage = () => {
     console.log("Seller Information:", seller);
 
     // Add additional logging for seller properties
-    console.log("Seller ID:", seller?._id);
-    console.log("Seller Name:", seller?.name);
-    console.log("Is Seller:", isSeller);
+    console.log("Shop ID:", seller?._id);
+    console.log("Shop Name:", seller?.name);
+    console.log("Is Shop:", isSeller);
   }, [seller, isSeller]);
 
   return (

@@ -17,4 +17,4 @@ const ShopInbox = () => {
   )
 }
 
-export default ShopInbox
+export default ShopInbox;

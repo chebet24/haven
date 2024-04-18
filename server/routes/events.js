@@ -8,10 +8,6 @@ router.post("/createevent",  async (req, res) => {
   try {
     const eventData = req.body;
 
-    // Attach shop information to the event
-    // eventData.shopId = req.shop.id;
-    // eventData.shop = req.shop;
-
     const newEvent = await Event.create(eventData);
     res.status(201).json(newEvent);
   } catch (error) {
@@ -28,6 +24,29 @@ router.get("/all", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// shop events 
+router.get("/shop/:shopId", async (req, res) => {
+  try {
+    const shopId = req.params.shopId;
+    console.log('Received shopId:', shopId);
+
+    // Find all products with the specified shop ID
+    const events = await Event.find({ shopId: shopId });
+    console.log('Found events:', events);
+
+    if (!events || events.length === 0) {
+      return res.status(404).json({ message: "No events found for the given shop ID" });
+    }
+
+    res.json(events);
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 
 // Get a specific event by ID
 router.get("/:eventId", async (req, res) => {

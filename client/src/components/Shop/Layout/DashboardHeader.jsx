@@ -46,7 +46,7 @@ const DashboardHeader = () => {
   return (
     <div className="w-full h-[80px] bg-red shadow sticky top-0 left-0 z-30 flex items-center justify-between px-4">
       <div>
-        <Link to="/dashboard">
+        <Link to="/shop/dashboard">
           <img src="" alt="avatar" />
         </Link>
         <p>{userData?.isSeller ? `Welcome ${seller?.name}` : 'You are not a seller'}</p>
@@ -54,31 +54,31 @@ const DashboardHeader = () => {
       {!loading && seller && ( // Check if seller is not null before rendering content
         <div className="flex items-center">
           <div className="flex items-center mr-4">
-            <Link to="/dashboard/coupons" className="lg:block ">
+            <Link to="/shop/dashboard-coupons" className="lg:block ">
               <AiOutlineGift
                 color="#555"
                 size={30}
                 className="mx-5 cursor-pointer"
               />
             </Link>
-            <Link to="/dashboard-events" className="lg:block">
+            <Link to="/shop/dashboard-events" className="lg:block">
               <MdOutlineLocalOffer
                 color="#555"
                 size={30}
                 className="mx-5 cursor-pointer"
               />
             </Link>
-            <Link to="/dashboard-products" className="lg:block">
+            <Link to="/shop/dashboard-products" className="lg:block">
               <FiShoppingBag
                 color="#555"
                 size={30}
                 className="mx-5 cursor-pointer"
               />
             </Link>
-            <Link to="/dashboard-orders" className="lg:block">
+            <Link to="/shop/dashboard-orders" className="lg:block">
               <FiPackage color="#555" size={30} className="mx-5 cursor-pointer" />
             </Link>
-            <Link to="/dashboard-messages" className="lg:block">
+            <Link to="/shop/dashboard-messages" className="lg:block">
               <BiMessageSquareDetail
                 color="#555"
                 size={30}

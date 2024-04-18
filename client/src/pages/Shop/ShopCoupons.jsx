@@ -5,6 +5,7 @@ import AllCoupons from "../../components/Shop/AllCoupons";
 
 const ShopCoupouns = () => {
   return (
+    
     <div>
         <DashboardHeader />
         <div className="flex justify-between w-full">
@@ -16,6 +17,7 @@ const ShopCoupouns = () => {
             </div>
           </div>
     </div>
+    
   )
 }
 

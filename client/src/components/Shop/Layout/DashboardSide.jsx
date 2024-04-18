@@ -11,7 +11,12 @@ import { HiOutlineReceiptRefund } from "react-icons/hi";
 import { useSeller } from '../../../context/SellerContext';
 
 const DashboardSide = ({ active }) => {
-  const { userData } = useSeller(); 
+  const { userData, setUserData } = useSeller();
+  const handleLogout = () => {
+    localStorage.clear(); // Clear local storage
+    // setUserData(null); // Clear user data in context state
+  };
+  
   return (
     <div className="w-full h-[90vh] bg-white shadow-sm overflow-y-scroll sticky top-0 left-0 z-10">
       {/* single item */}
@@ -129,8 +134,8 @@ const DashboardSide = ({ active }) => {
         </Link>
       </div>
 
-      {/* <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-messages" className="w-full flex items-center">
+      <div className="w-full flex items-center p-4">
+        <Link to="/shop/dashboard-messages" className="w-full flex items-center">
           <BiMessageSquareDetail
             size={30}
             color={`${active === 8 ? "crimson" : "#555"}`}
@@ -143,10 +148,10 @@ const DashboardSide = ({ active }) => {
             Shop Inbox
           </h5>
         </Link>
-      </div> */}
+      </div>
 
       <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-coupouns" className="w-full flex items-center">
+        <Link to="/shop/dashboard-coupons" className="w-full flex items-center">
           <AiOutlineGift
             size={30}
             color={`${active === 9 ? "crimson" : "#555"}`}
@@ -162,7 +167,7 @@ const DashboardSide = ({ active }) => {
       </div>
 
       <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-refunds" className="w-full flex items-center">
+        <Link to="/shop/dashboard-refunds" className="w-full flex items-center">
           <HiOutlineReceiptRefund
             size={30}
             color={`${active === 10 ? "crimson" : "#555"}`}
@@ -178,7 +183,7 @@ const DashboardSide = ({ active }) => {
       </div>
 
       <div className="w-full flex items-center p-4">
-        <Link to="/settings" className="w-full flex items-center">
+        <Link to="/shop/settings" className="w-full flex items-center">
           <CiSettings
             size={30}
             color={`${active === 11 ? "crimson" : "#555"}`}
@@ -191,6 +196,16 @@ const DashboardSide = ({ active }) => {
             Settings
           </h5>
         </Link>
+        <Link to ='/shop/login'>
+        <div className="w-full flex items-center justify-end p-4">
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Logout
+        </button>
+      </div>
+      </Link>
       </div>
       </>
       )}

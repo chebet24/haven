@@ -23,20 +23,12 @@ const userSchema = new mongoose.Schema({
   },
   addresses:[
     {
-      country: {
-        type: String,
-      },
-      city:{
-        type: String,
-      },
+      
       address1:{
         type: String,
       },
       address2:{
         type: String,
-      },
-      zipCode:{
-        type: Number,
       },
       addressType:{
         type: String,
@@ -47,16 +39,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "user",
   },
-//   avatar:{
-//     public_id: {
-//       type: String,
-//       required: true,
-//     },
-//     url: {
-//       type: String,
-//       required: true,
-//     },
-//  },
+  avatar: {
+    type: [String], // Assuming storing image URLs
+    required: true,
+  },
  createdAt:{
   type: Date,
   default: Date.now(),
